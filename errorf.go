@@ -2,25 +2,7 @@ package errors
 
 import "fmt"
 
-// Errorf formats according to a format specifier and returns the string as a
-// value that satisfies error. Errorf also records the stack trace at the point
-// it was called.
-//
-// If the format specifier includes a %w verb with an error operand, the returned
-// error will implement an Unwrap method returning the operand. If there is more
-// than one %w verb, the returned error will implement an Unwrap method returning
-// a slice of all error operands. It is invalid to include an operand for a %w verb
-// that does not implement the error interface.
-// The %w verb is otherwise a synonym for %v.
-//
-// This function is compatible with Go's standard fmt.Errorf but adds automatic
-// stack trace collection.
-//
-// Example:
-//
-//	base := errors.New("base error")
-//	wrapped := errors.Errorf("wrapped: %w", base)
-//	fmt.Printf("%+v", wrapped)  // prints error with stack trace
+// Errorf works exactly like the standard library [fmt.Errorf] but adds a stack trace if none is present.
 func Errorf(format string, args ...any) error {
 	return innerErrorf(format, args...)
 }

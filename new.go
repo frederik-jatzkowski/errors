@@ -4,16 +4,7 @@ type simple struct {
 	msg string
 }
 
-// New returns an error that formats as the given text.
-// Each call to New returns a distinct error value even if the text is identical.
-//
-// This function automatically adds stack trace information to the error unless
-// it's called during package initialization or other sentinel contexts.
-//
-// Example:
-//
-//	err := errors.New("something went wrong")
-//	fmt.Printf("%+v", err)  // prints error with stack trace
+// New works exactly like the standard library [errors.New] but adds a stack trace.
 func New(text string) error {
 	return innerNew(text)
 }

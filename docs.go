@@ -5,18 +5,18 @@
 // error functions while adding valuable debugging information.
 //
 // Core Functions:
-//   - New: Creates a new error with stack trace information
-//   - Errorf: Formats an error with stack trace support and %w verb handling
-//   - Join: Combines multiple errors into a single error
-//   - Is, As, Unwrap: Standard error inspection functions (delegated to std library)
-//   - SprintStackTrace: Extracts and formats stack trace from errors
+//   - [New]: Creates a new error with stack trace information
+//   - [Errorf]: Formats an error with stack trace support and %w verb handling
+//   - [Join]: Combines multiple errors into a single error
+//   - [Is], [As], [Unwrap]: Standard error inspection functions (delegated to std library)
+//   - [SprintStackTrace]: Extracts and formats stack trace from errors
 //
 // Stack Traces:
 //
 // Stack traces are automatically added to errors created by this package unless
 // the error already has a stack trace or
 // the error is created in a sentinel context (like package initialization).
-// Stack traces can be formatted using the %+v verb with fmt package.
+// Stack traces can be formatted using the %+v verb with fmt package or extracted using [SprintStackTrace].
 //
 // Error Formatting:
 //
@@ -29,5 +29,5 @@
 // Compatibility:
 //
 // This package provides deprecated compatibility functions for migration from
-// github.com/pkg/errors, but using the core API is recommended for new code.
+// [github.com/pkg/errors], but using the core API is recommended for new code.
 package errors

@@ -8,24 +8,7 @@ type join struct {
 	wrapped []error
 }
 
-// Join returns an error that wraps the given errors.
-// Any nil error values are discarded.
-// Join returns nil if all errors are nil.
-// The error formats as the concatenation of the strings obtained
-// by calling the Error method of each element of errs, with a newline
-// between each string.
-//
-// A non-nil error returned by Join implements the Unwrap() []error method,
-// which returns a copy of errs with any nil values removed.
-//
-// This function automatically adds stack trace information to the joined error.
-//
-// Example:
-//
-//	err1 := errors.New("first error")
-//	err2 := errors.New("second error")
-//	joined := errors.Join(err1, err2)
-//	fmt.Printf("%+v", joined)  // prints both errors with stack trace
+// Join works exactly like the standard library [errors.Join] but adds a stack trace if none is present.
 func Join(errs ...error) error {
 	return innerJoin(errs...)
 }

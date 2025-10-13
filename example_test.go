@@ -15,9 +15,9 @@ func Example_ignoreStackTrace() {
 	// hello world
 }
 
-func Example_withStackTrace() {
+func ExampleSprintStackTrace() {
 	err := errors.New("test")
-	fmt.Printf("%+v", err)
+	fmt.Println(errors.SprintStackTrace(err))
 }
 
 func Example_logger() {

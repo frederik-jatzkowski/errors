@@ -18,19 +18,6 @@ func getStackTrace(err error) (st *stackTrace, ok bool) {
 
 // SprintStackTrace extracts and formats the stack trace from an error as a string.
 // If the error does not contain stack trace information, it returns an empty string.
-//
-// This function searches for stack trace information in the error by looking for
-// errors that implement the StackTrace interface or contain embedded stack traces.
-// It uses the String() method of the StackTrace to format the output.
-//
-// Example:
-//
-//	err := errors.New("something went wrong")
-//	stackStr := errors.SprintStackTrace(err)
-//	if stackStr != "" {
-//	    fmt.Println("Stack trace:")
-//	    fmt.Println(stackStr)
-//	}
 func SprintStackTrace(err error) string {
 	st, ok := getStackTrace(err)
 	if !ok {
