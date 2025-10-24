@@ -8,16 +8,52 @@ import (
 	"github.com/frederik-jatzkowski/errors"
 )
 
-func Example_ignoreStackTrace() {
-	err := errors.New("hello world")
-	fmt.Println(err)
+func Example_onlyHumanReadable() {
+	err := errors.Errorf(
+		"call failed: %w",
+		errors.Errorf(
+			"processing id %d:%w",
+			123,
+			errors.Join(
+				errors.Errorf("two things failed: %w, %w",
+					errors.New("something bad happened"),
+					errors.Errorf(
+						"doing somthing: %w",
+						errors.Errorf("failed"),
+					),
+				),
+				errors.New("something else happened"),
+			),
+		),
+	)
+
+	fmt.Printf("%s", err)
 	// Output:
-	// hello world
+	// call failed: processing id 123:
+	// two things failed: something bad happened, doing somthing: failed
+	// something else happened
 }
 
-func ExampleSprintStackTrace() {
-	err := errors.New("test")
-	fmt.Println(errors.SprintStackTrace(err))
+func Example_includeStackTraces() {
+	err := errors.Errorf(
+		"call failed: %w",
+		errors.Errorf(
+			"processing id %d:%w",
+			123,
+			errors.Join(
+				errors.Errorf("two things failed: %w, %w",
+					errors.New("something bad happened"),
+					errors.Errorf(
+						"doing somthing: %w",
+						errors.Errorf("failed"),
+					),
+				),
+				errors.New("something else happened"),
+			),
+		),
+	)
+
+	fmt.Printf("%+v", err)
 }
 
 func Example_logger() {
@@ -25,5 +61,5 @@ func Example_logger() {
 
 	err := errors.New("test")
 
-	logger.Error("an error occurred", "message", err, "stack", errors.SprintStackTrace(err))
+	logger.Error("an error occurred", "error", err, "full", fmt.Sprintf("%+v", err))
 }

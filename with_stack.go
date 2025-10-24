@@ -4,6 +4,11 @@ import (
 	"fmt"
 )
 
+type internalError interface {
+	error
+	setWithStack(ws *withStack)
+}
+
 type withStack struct {
 	inner error
 	st    *stackTrace

@@ -2,30 +2,9 @@ package errors
 
 import (
 	"fmt"
-	"io"
 	"runtime"
 	"strings"
 )
-
-func getStackTrace(err error) (st *stackTrace, ok bool) {
-	var ws *withStack
-	if As(err, &ws) {
-		return ws.st, true
-	}
-
-	return nil, false
-}
-
-// SprintStackTrace extracts and formats the stack trace from an error as a string.
-// If the error does not contain stack trace information, it returns an empty string.
-func SprintStackTrace(err error) string {
-	st, ok := getStackTrace(err)
-	if !ok {
-		return ""
-	}
-
-	return st.String()
-}
 
 type stackTrace runtime.StackRecord
 
@@ -36,27 +15,7 @@ func newStackTrace() *stackTrace {
 }
 
 func (st *stackTrace) String() string {
-	return fmt.Sprintf("%+v\n", st)
-}
-
-func (st *stackTrace) Format(s fmt.State, verb rune) {
-	switch {
-	case s.Flag('#'):
-		// nolint: errcheck
-		fmt.Fprintf(s, "%#v", (*runtime.StackRecord)(st))
-	default:
-		for _, pc := range st.Stack0 {
-			if pc == 0 {
-				continue
-			}
-
-			// nolint: errcheck
-			io.WriteString(s, "\n")
-
-			// nolint: errcheck
-			s.Write([]byte(formatFrame(pc)))
-		}
-	}
+	return fmt.Sprintf("%+v", st)
 }
 
 func (st *stackTrace) isSentinel() bool {
@@ -73,18 +32,29 @@ func (st *stackTrace) isSentinel() bool {
 	return true
 }
 
-func formatFrame(pc uintptr) string {
-	funcForPC := runtime.FuncForPC(pc)
-	if funcForPC == nil {
-		return "unknown"
+// ensureStackTraceIfNecessary adds a stack trace to the error if at least one of the
+// shouldHaveStack errors doesn't have one already.
+// It also sets the first instance of *withStack found in err.
+func ensureStackTraceIfNecessary(err internalError, shouldHaveStack []error) error {
+	var (
+		trace                *withStack
+		actuallyHavingStacks int
+	)
+	for _, err2 := range shouldHaveStack {
+		if As(err2, &trace) {
+			if actuallyHavingStacks == 0 {
+				err.setWithStack(trace)
+			}
+			actuallyHavingStacks++
+		}
 	}
 
-	name := funcForPC.Name()
-	file, line := funcForPC.FileLine(pc)
+	if actuallyHavingStacks == len(shouldHaveStack) && len(shouldHaveStack) > 0 {
+		return err
+	}
 
-	return fmt.Sprintf("\t%s\n\t\t%s:%d", name, file, line)
-}
-
-func (st *stackTrace) RuntimeStackRecord() *runtime.StackRecord {
-	return (*runtime.StackRecord)(st)
+	return &withStack{
+		inner: err,
+		st:    newStackTrace(),
+	}
 }

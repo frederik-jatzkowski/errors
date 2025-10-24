@@ -14,16 +14,15 @@ func Example() {
 	err := errors.Errorf("an error occurred: %w", ErrTest)
 	fmt.Println(err)
 	fmt.Println("can check for wrapped sentinel errors:", errors.Is(err, ErrTest))
-	fmt.Println("sentinel error has no stack trace:", errors.SprintStackTrace(ErrTest) == "")
-	fmt.Println("wrapped error has a stack trace:", errors.SprintStackTrace(err) != "")
+	fmt.Println("sentinel error has no stack trace:", fmt.Sprintf("%+v", ErrTest) == fmt.Sprintf("%s", ErrTest))
+	fmt.Println("wrapped error has a stack trace:", fmt.Sprintf("%+v", err) != fmt.Sprintf("%s", err))
 
 	extraErr := errors.Errorf("extra: %w", err)
-	stackTrace := errors.SprintStackTrace(extraErr)
 
 	errFmt := fmt.Sprintf("%+v", err)
 	extraErrFmt := fmt.Sprintf("%+v", extraErr)
 
-	fmt.Println("prevents duplicate stack traces:", len(extraErrFmt) < len(errFmt)+len(stackTrace))
+	fmt.Println("prevents duplicate stack traces:", len(extraErrFmt) < len(errFmt)+50)
 
 	// Output:
 	// an error occurred: test error

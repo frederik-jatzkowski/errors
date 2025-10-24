@@ -49,6 +49,13 @@ linters:
           pkg: ^fmt$
           msg: Use github.com/frederik-jatzkowski/errors.Errorf instead.
       analyze-types: true
+    wrapcheck:
+      report-internal-errors: true
+      extra-ignore-sigs:
+        - innerErrorf
+        - innerJoin
+        - ensureStackTrace
+        - innerNew
 
 issues:
   max-issues-per-linter: 0

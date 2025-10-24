@@ -7,14 +7,43 @@ A minimal and idiomatic error handling library for the Go Programming Language a
 
 ## Explicit Design Goals
 
-- Drop-In replacement for the standard "errors" and "fmt" packages
+- Drop-In replacement for the standard error handling in the "errors" and "fmt" packages
   - Write idiomatic Go code
   - No stack traces in sentinel errors
-  - No duplicate stack traces
+  - Add stack traces only if errors without stack traces enter the error tree.
 - Statically enforced best practices.
 - Locality of behaviour and low cognitive load.
 - Easy conversion fom other error handling libraries:
   - [github.com/pkg/errors](https://github.com/pkg/errors)
+
+This module allows both for human-readable output formatting using `err.Error()` or the `%v`/`%s` verbs
+or for full stack trace information using the `%+v` verbs.
+It just adds enough stack traces that the origin of root errors can be easily reconstructed while allowing for great, human-readable error messages.
+
+So, the same error can be formatted as 
+
+```
+call failed: doing a: something bad happened, doing b: external dependency error
+```
+
+or
+
+```
+call failed: doing a: something bad happened
+    main.main
+        github.com/frederik-jatzkowski/errors/examples/errorf/main.go:14
+    internal/runtime/atomic.(*Uint32).Load
+        internal/runtime/atomic/types.go:194
+    runtime.goexit
+        runtime/asm_arm64.s:1224
+, doing b: external dependency error
+    main.main
+        github.com/frederik-jatzkowski/errors/examples/errorf/main.go:12
+    internal/runtime/atomic.(*Uint32).Load
+        internal/runtime/atomic/types.go:194
+    runtime.goexit
+        runtime/asm_arm64.s:1224
+```
 
 ## Enforce Proper Usage with Linters
 
@@ -41,3 +70,46 @@ linters:
           msg: Use github.com/frederik-jatzkowski/errors.Errorf instead.
       analyze-types: true
 ```
+
+You may also enable `report-internal-errors` in the `wrapcheck` config to enforce very detailed human-readable error messages:
+
+```yaml
+linters:
+  settings:
+    wrapcheck:
+      report-internal-errors: true
+```
+
+## Performance
+
+There is some performance overhead to the addition of stack traces due to the necessary `runtime.Callers` call.
+However, adding new layers of nested errors is an amortized constant time effort per added layer.
+
+Standard Library Join without checks for stack traces:
+```
+goos: darwin
+goarch: arm64
+pkg: github.com/frederik-jatzkowski/errors
+cpu: Apple M2 Max
+BenchmarkStdJoin
+BenchmarkStdJoin-12    	57709878	        20.80 ns/op
+```
+
+When no stack exists, we have to do a `runtime.Callers` call:
+
+```
+BenchmarkJoin-12    	 1966750	       611.5 ns/op
+```
+
+
+After 5 nested layers and stack already exists:
+```
+BenchmarkJoin_Deep5-12    	14539718	        81.43 ns/op
+```
+
+After 50 nested layers:
+```
+BenchmarkJoin_Deep50-12    	14128707	        82.86 ns/op
+```
+
+Similar behaviour is observable for the other public functions of this package.
