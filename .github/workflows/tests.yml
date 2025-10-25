@@ -37,7 +37,7 @@ jobs:
             exit 1
           fi
   test_go122:
-    name: Test stable go version
+    name: Test go1.22
     runs-on: ubuntu-latest
     steps:
       - name: Set up Go
@@ -52,7 +52,7 @@ jobs:
       - name: Test
         run: go test ./...
   test_go123:
-    name: Test stable go version
+    name: Test go1.23
     runs-on: ubuntu-latest
     steps:
       - name: Set up Go
@@ -67,7 +67,7 @@ jobs:
       - name: Test
         run: go test ./...
   test_go124:
-    name: Test stable go version
+    name: Test go1.24
     runs-on: ubuntu-latest
     steps:
       - name: Set up Go
