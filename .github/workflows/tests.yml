@@ -11,14 +11,14 @@ on:
       - "v*" # ... and for pull requests to main and version branches.
 
 jobs:
-  test:
-    name: Test with Coverage
+  test_go121:
+    name: Test go1.21 with Coverage
     runs-on: ubuntu-latest
     steps:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "stable" # ensure compatibility with go v1.20 onwards
+          go-version: "1.21" # ensure compatibility with go v1.21 onwards
           cache: true
       - name: Check out code into the Go module directory
         uses: actions/checkout@v4
@@ -36,3 +36,18 @@ jobs:
             echo "❌ Coverage ${COVERAGE}% is below required 75%"
             exit 1
           fi
+  test_gostable:
+    name: Test stable go version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "stable" # ensure compatibility with latest stable go version
+          cache: true
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v4
+      - name: Get dependencies
+        run: go mod tidy
+      - name: Test
+        run: go test -coverprofile=coverage.out ./...
