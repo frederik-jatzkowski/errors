@@ -2,6 +2,7 @@ package errors
 
 import (
 	"fmt"
+	"path/filepath"
 	"runtime"
 	"strings"
 )
@@ -19,17 +20,14 @@ func (st *stackTrace) String() string {
 }
 
 func (st *stackTrace) isSentinel() bool {
-	for _, pc := range st.Stack0 {
-		if pc == 0 {
-			continue
-		}
-		name := runtime.FuncForPC(pc).Name()
-		if !strings.HasPrefix(name, "runtime.") && !strings.HasSuffix(name, ".init") {
-			return false
-		}
+	if st.Stack0[0] == 0 {
+		return true
 	}
 
-	return true
+	firstFuncName := runtime.FuncForPC(st.Stack0[0]).Name()
+	firstFuncBase := filepath.Base(firstFuncName)
+
+	return strings.HasSuffix(firstFuncBase, ".init")
 }
 
 // ensureStackTraceIfNecessary adds a stack trace to the error if at least one of the
@@ -53,8 +51,13 @@ func ensureStackTraceIfNecessary(err internalError, shouldHaveStack []error) err
 		return err
 	}
 
+	st := newStackTrace()
+	if st.isSentinel() {
+		return err
+	}
+
 	return &withStack{
 		inner: err,
-		st:    newStackTrace(),
+		st:    st,
 	}
 }

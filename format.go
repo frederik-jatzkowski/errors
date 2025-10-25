@@ -5,11 +5,16 @@ import (
 	"runtime"
 )
 
-func (e *errorfMany) Format(f fmt.State, verb rune) {
-	if shouldPrintStack(f, verb) {
-		e.formatWithStack(f, verb)
-	} else {
-		printErrorString(e.msg, f, verb)
+func (e *errorfMany) Format(s fmt.State, verb rune) {
+	switch {
+	case shouldPrintStack(s, verb):
+		e.formatWithStack(s, verb)
+	case shouldPrintErrorMessage(s, verb):
+		// nolint: errcheck
+		fmt.Fprintf(s, fmt.FormatString(s, verb), e.msg)
+	default:
+		// nolint: errcheck
+		fmt.Fprintf(s, "%%!%c(%v)", verb, e)
 	}
 }
 
@@ -18,11 +23,16 @@ func (e *errorfMany) formatWithStack(f fmt.State, verb rune) {
 	fmt.Fprintf(f, rewriteFormatString(e.format), e.args...)
 }
 
-func (e *errorfSingle) Format(f fmt.State, verb rune) {
-	if shouldPrintStack(f, verb) {
-		e.formatWithStack(f, verb)
-	} else {
-		printErrorString(e.msg, f, verb)
+func (e *errorfSingle) Format(s fmt.State, verb rune) {
+	switch {
+	case shouldPrintStack(s, verb):
+		e.formatWithStack(s, verb)
+	case shouldPrintErrorMessage(s, verb):
+		// nolint: errcheck
+		fmt.Fprintf(s, fmt.FormatString(s, verb), e.msg)
+	default:
+		// nolint: errcheck
+		fmt.Fprintf(s, "%%!%c(%v)", verb, e)
 	}
 }
 
@@ -70,9 +80,8 @@ func shouldPrintStack(s fmt.State, verb rune) bool {
 	return verb == 'v' && s.Flag('+')
 }
 
-func printErrorString(msg string, s fmt.State, verb rune) {
-	// nolint: errcheck
-	fmt.Fprintf(s, fmt.FormatString(s, verb), msg)
+func shouldPrintErrorMessage(s fmt.State, verb rune) bool {
+	return verb == 'v' && !s.Flag('+') || verb == 's'
 }
 
 func delegateFormat(err error, s fmt.State, verb rune) {
@@ -82,10 +91,7 @@ func delegateFormat(err error, s fmt.State, verb rune) {
 
 func (st *stackTrace) Format(s fmt.State, verb rune) {
 	switch {
-	case s.Flag('#'):
-		// nolint: errcheck
-		fmt.Fprintf(s, "%#v", (*runtime.StackRecord)(st))
-	default:
+	case shouldPrintStack(s, verb) || verb == 's':
 		for _, pc := range st.Stack0 {
 			if pc == 0 {
 				break
@@ -97,6 +103,9 @@ func (st *stackTrace) Format(s fmt.State, verb rune) {
 			// nolint: errcheck
 			s.Write([]byte(formatFrame(pc)))
 		}
+	default:
+		// nolint: errcheck
+		fmt.Fprintf(s, "%%!%c(%s)", verb, st)
 	}
 
 	// nolint: errcheck

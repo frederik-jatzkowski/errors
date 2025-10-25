@@ -8,7 +8,7 @@ import (
 
 var (
 	ErrSomethingWentWrong    = errors.New("something went wrong")
-	ErrSomthingElseWentWrong = errors.New("something else went wrong")
+	ErrSomthingElseWentWrong = errors.Errorf("something else went wrong")
 )
 
 func main() {
@@ -22,5 +22,4 @@ func main() {
 	)
 
 	fmt.Printf("%+v\n", err)
-	fmt.Printf("%+v\n", errors.Errorf("abc"))
 }

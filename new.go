@@ -13,17 +13,9 @@ func New(text string) error {
 }
 
 func innerNew(text string) error {
-	st := newStackTrace()
-
-	err := &simple{
+	return ensureStackTraceIfNecessary(&simple{
 		msg: text,
-	}
-
-	if !st.isSentinel() {
-		return ensureStackTraceIfNecessary(err, nil)
-	}
-
-	return err
+	}, nil)
 }
 
 func (s *simple) Error() string {

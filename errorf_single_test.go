@@ -33,4 +33,20 @@ func Test_errorfSingle(t *testing.T) {
 
 		assert.ErrorIs(t, err, err)
 	})
+
+	t.Run("As edge cases", func(t *testing.T) {
+		single := &errorfSingle{
+			msg:     "test error",
+			wrapped: errors.New("inner"), // nolint: forbidigo
+		}
+
+		// Test As with unsupported target type
+		var stringPtr *string
+		assert.False(t, single.As(&stringPtr))
+
+		// Test As with nil withStack
+		single.stack = nil
+		var withStackPtr *withStack
+		assert.False(t, single.As(&withStackPtr))
+	})
 }
