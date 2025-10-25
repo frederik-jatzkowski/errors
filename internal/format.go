@@ -1,52 +1,52 @@
-package errors
+package internal
 
 import (
 	"fmt"
 	"runtime"
 )
 
-func (e *errorfMany) Format(s fmt.State, verb rune) {
+func (e *ErrorfMany) Format(s fmt.State, verb rune) {
 	switch {
 	case shouldPrintStack(s, verb):
 		e.formatWithStack(s, verb)
 	case shouldPrintErrorMessage(s, verb):
 		// nolint: errcheck
-		fmt.Fprintf(s, fmt.FormatString(s, verb), e.msg)
+		fmt.Fprintf(s, fmt.FormatString(s, verb), e.Msg)
 	default:
 		// nolint: errcheck
 		fmt.Fprintf(s, "%%!%c(%v)", verb, e)
 	}
 }
 
-func (e *errorfMany) formatWithStack(f fmt.State, verb rune) {
+func (e *ErrorfMany) formatWithStack(f fmt.State, verb rune) {
 	// nolint: errcheck
 	fmt.Fprintf(f, rewriteFormatString(e.format), e.args...)
 }
 
-func (e *errorfSingle) Format(s fmt.State, verb rune) {
+func (e *ErrorfSingle) Format(s fmt.State, verb rune) {
 	switch {
 	case shouldPrintStack(s, verb):
 		e.formatWithStack(s, verb)
 	case shouldPrintErrorMessage(s, verb):
 		// nolint: errcheck
-		fmt.Fprintf(s, fmt.FormatString(s, verb), e.msg)
+		fmt.Fprintf(s, fmt.FormatString(s, verb), e.Msg)
 	default:
 		// nolint: errcheck
 		fmt.Fprintf(s, "%%!%c(%v)", verb, e)
 	}
 }
 
-func (e *errorfSingle) formatWithStack(f fmt.State, verb rune) {
+func (e *ErrorfSingle) formatWithStack(f fmt.State, verb rune) {
 	// nolint: errcheck
 	fmt.Fprintf(f, rewriteFormatString(e.format), e.args...)
 }
 
-func (j *join) Format(f fmt.State, verb rune) {
-	if len(j.wrapped) > 1 {
+func (j *Join) Format(f fmt.State, verb rune) {
+	if len(j.Wrapped) > 1 {
 		// nolint: errcheck
 		fmt.Fprintln(f)
 	}
-	for _, err := range j.wrapped {
+	for _, err := range j.Wrapped {
 		delegateFormat(err, f, verb)
 
 		// nolint: errcheck
@@ -89,7 +89,7 @@ func delegateFormat(err error, s fmt.State, verb rune) {
 	fmt.Fprintf(s, fmt.FormatString(s, verb), err)
 }
 
-func (st *stackTrace) Format(s fmt.State, verb rune) {
+func (st *StackTrace) Format(s fmt.State, verb rune) {
 	switch {
 	case shouldPrintStack(s, verb) || verb == 's':
 		for _, pc := range st.Stack0 {
@@ -101,7 +101,7 @@ func (st *stackTrace) Format(s fmt.State, verb rune) {
 			fmt.Fprintln(s)
 
 			// nolint: errcheck
-			s.Write([]byte(formatFrame(pc)))
+			s.Write([]byte(FormatFrame(pc)))
 		}
 	default:
 		// nolint: errcheck
@@ -112,7 +112,7 @@ func (st *stackTrace) Format(s fmt.State, verb rune) {
 	fmt.Fprintln(s)
 }
 
-func formatFrame(pc uintptr) string {
+func FormatFrame(pc uintptr) string {
 	funcForPC := runtime.FuncForPC(pc)
 	if funcForPC == nil {
 		return "unknown"

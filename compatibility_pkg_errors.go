@@ -1,5 +1,7 @@
 package errors
 
+import "github.com/frederik-jatzkowski/errors/internal"
+
 // Cause returns the underlying cause of the error, if possible.
 // An error value has a cause if it implements the following interface:
 //
@@ -44,7 +46,7 @@ func WithMessage(err error, msg string) error {
 		return nil
 	}
 
-	return innerErrorf("%s: %w", msg, err)
+	return internal.Errorf(1, "%s: %w", msg, err)
 }
 
 // WithMessagef annotates err with the format specifier and arguments.
@@ -63,7 +65,7 @@ func WithMessagef(err error, format string, args ...any) error {
 		return nil
 	}
 
-	return innerErrorf(format+": %w", append(args, err)...)
+	return internal.Errorf(1, format+": %w", append(args, err)...)
 }
 
 // WithStack annotates err with a stack trace at the point [WithStack] was called.
@@ -78,7 +80,8 @@ func WithMessagef(err error, format string, args ...any) error {
 // Deprecated: Use the recommended API of this module instead. Stack traces are
 // automatically added by [New], [Errorf], and [Join] functions.
 func WithStack(err error) error {
-	return innerJoin(err)
+	// nolint: wrapcheck
+	return internal.NewJoin(1, err)
 }
 
 // Wrap returns an error annotating err with a stack trace at the point [Wrap] is
@@ -97,7 +100,7 @@ func Wrap(err error, msg string) error {
 		return nil
 	}
 
-	return innerErrorf("%s: %w", msg, err)
+	return internal.Errorf(1, "%s: %w", msg, err)
 }
 
 // Wrapf returns an error annotating err with a stack trace at the point [Wrapf] is
@@ -116,5 +119,5 @@ func Wrapf(err error, format string, args ...any) error {
 		return nil
 	}
 
-	return innerErrorf(format+": %w", append(args, err)...)
+	return internal.Errorf(1, format+": %w", append(args, err)...)
 }

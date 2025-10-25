@@ -1,4 +1,4 @@
-package errors
+package internal_test
 
 import (
 	"errors"
@@ -6,17 +6,19 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/frederik-jatzkowski/errors/internal"
 )
 
 func Test_errorfMany(t *testing.T) {
-	many := &errorfMany{}
-	with := &withStack{}
+	many := &internal.ErrorfMany{}
+	with := &internal.WithStack{}
 
 	t.Run("As", func(t *testing.T) {
 		err := errors.New("hello world") // nolint: forbidigo
-		err = ensureStackTraceIfNecessary(&errorfMany{
-			msg:     "hi",
-			wrapped: []error{err},
+		err = internal.EnsureStackTraceIfNecessary(2, &internal.ErrorfMany{
+			Msg:     "hi",
+			Wrapped: []error{err},
 		}, []error{err})
 
 		assert.ErrorAs(t, err, &many)
@@ -26,9 +28,9 @@ func Test_errorfMany(t *testing.T) {
 
 	t.Run("Is", func(t *testing.T) {
 		err := errors.New("hello world") // nolint: forbidigo
-		err = ensureStackTraceIfNecessary(&errorfMany{
-			msg:     "hi",
-			wrapped: []error{err},
+		err = internal.EnsureStackTraceIfNecessary(2, &internal.ErrorfMany{
+			Msg:     "hi",
+			Wrapped: []error{err},
 		}, []error{err})
 
 		assert.ErrorIs(t, err, err)
@@ -37,9 +39,9 @@ func Test_errorfMany(t *testing.T) {
 	t.Run("Unwrap", func(t *testing.T) {
 		err1 := errors.New("error 1") // nolint: forbidigo
 		err2 := errors.New("error 2") // nolint: forbidigo
-		many := &errorfMany{
-			msg:     "multiple errors",
-			wrapped: []error{err1, err2},
+		many := &internal.ErrorfMany{
+			Msg:     "multiple errors",
+			Wrapped: []error{err1, err2},
 		}
 
 		unwrapped := many.Unwrap()
@@ -49,9 +51,9 @@ func Test_errorfMany(t *testing.T) {
 	})
 
 	t.Run("As edge cases", func(t *testing.T) {
-		many := &errorfMany{
-			msg:     "test error",
-			wrapped: []error{errors.New("inner")}, // nolint: forbidigo
+		many := &internal.ErrorfMany{
+			Msg:     "test error",
+			Wrapped: []error{errors.New("inner")}, // nolint: forbidigo
 		}
 
 		// Test As with unsupported target type
@@ -59,8 +61,8 @@ func Test_errorfMany(t *testing.T) {
 		assert.False(t, many.As(&stringPtr))
 
 		// Test As with nil withStack
-		many.stack = nil
-		var withStackPtr *withStack
+		many.Stack = nil
+		var withStackPtr *internal.WithStack
 		assert.False(t, many.As(&withStackPtr))
 	})
 }

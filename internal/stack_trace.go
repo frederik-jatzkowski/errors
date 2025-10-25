@@ -1,25 +1,26 @@
-package errors
+package internal
 
 import (
+	"errors"
 	"fmt"
 	"path/filepath"
 	"runtime"
 	"strings"
 )
 
-type stackTrace runtime.StackRecord
+type StackTrace runtime.StackRecord
 
-func newStackTrace() *stackTrace {
-	record := &stackTrace{}
-	runtime.Callers(5, record.Stack0[:])
+func NewStackTrace(depth int) *StackTrace {
+	record := &StackTrace{}
+	runtime.Callers(depth+2, record.Stack0[:])
 	return record
 }
 
-func (st *stackTrace) String() string {
+func (st *StackTrace) String() string {
 	return fmt.Sprintf("%+v", st)
 }
 
-func (st *stackTrace) isSentinel() bool {
+func (st *StackTrace) IsSentinel() bool {
 	if st.Stack0[0] == 0 {
 		return true
 	}
@@ -30,18 +31,19 @@ func (st *stackTrace) isSentinel() bool {
 	return strings.HasSuffix(firstFuncBase, ".init")
 }
 
-// ensureStackTraceIfNecessary adds a stack trace to the error if at least one of the
+// EnsureStackTraceIfNecessary adds a stack trace to the error if at least one of the
 // shouldHaveStack errors doesn't have one already.
 // It also sets the first instance of *withStack found in err.
-func ensureStackTraceIfNecessary(err internalError, shouldHaveStack []error) error {
+func EnsureStackTraceIfNecessary(depth int, err Error, shouldHaveStack []error) error {
 	var (
-		trace                *withStack
+		trace                *WithStack
 		actuallyHavingStacks int
 	)
 	for _, err2 := range shouldHaveStack {
-		if As(err2, &trace) {
+		// nolint: forbidigo
+		if errors.As(err2, &trace) {
 			if actuallyHavingStacks == 0 {
-				err.setWithStack(trace)
+				err.SetWithStack(trace)
 			}
 			actuallyHavingStacks++
 		}
@@ -51,13 +53,13 @@ func ensureStackTraceIfNecessary(err internalError, shouldHaveStack []error) err
 		return err
 	}
 
-	st := newStackTrace()
-	if st.isSentinel() {
+	st := NewStackTrace(depth + 1)
+	if st.IsSentinel() {
 		return err
 	}
 
-	return &withStack{
-		inner: err,
-		st:    st,
+	return &WithStack{
+		Inner: err,
+		St:    st,
 	}
 }
