@@ -25,15 +25,6 @@ linters:
     - wrapcheck
 
   settings:
-    gci:
-      sections:
-        - standard
-        - default
-        - prefix(github.com/frederik-jatzkowski/errors)
-    gofmt:
-      simplify: true
-    goimports:
-      local-prefixes: github.com/frederik-jatzkowski/errors
     govet:
       enable-all: true
     staticcheck:
