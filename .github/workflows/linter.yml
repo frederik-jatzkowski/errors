@@ -10,6 +10,9 @@ on:
       - main
       - "v*" # ... and for pull requests to main and version branches.
 
+  schedule:
+    - cron: '0 0 * * 0'  # Run weekly on Sundays at midnight UTC
+
 permissions:
   contents: read
   # Optional: allow read access to pull request. Use with `only-new-issues` option.
