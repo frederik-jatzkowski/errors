@@ -1,0 +1,75 @@
+# yaml-language-server: https://golangci-lint.run/jsonschema/golangci.jsonschema.json
+version: "2"
+run:
+  timeout: 5m
+  issues-exit-code: 1
+  go: "1.21"
+
+linters:
+  default: none
+  enable:
+    # Essential linters for code quality and bug detection
+    - errcheck      # Check for unchecked errors
+    - govet         # Go vet examines Go source code
+    - ineffassign   # Detect ineffectual assignments
+    - staticcheck   # Advanced Go static analysis
+    - unused        # Check for unused constants, variables, functions and types
+
+    # Common issues and best practices
+    # - typecheck     # Parse and type-check Go code
+    - misspell      # Find commonly misspelled English words
+    - gocritic      # Highly extensible Go static analysis
+
+    # Making sure the recommendations in the documentation work
+    - forbidigo
+    - wrapcheck
+
+  settings:
+    govet:
+      enable-all: true
+    staticcheck:
+      checks: [ "all" ]
+    forbidigo:
+      forbid:
+        # disallow the entire stdlib errors package
+        - pattern: ^errors\..*$
+          pkg: ^errors$
+          msg: Use github.com/frederik-jatzkowski/errors.* instead.
+        # disallow fmt.Errorf
+        - pattern: ^fmt\.Errorf$
+          pkg: ^fmt$
+          msg: Use github.com/frederik-jatzkowski/errors.Errorf instead.
+      analyze-types: true
+    wrapcheck:
+      report-internal-errors: true
+      extra-ignore-sigs:
+        - innerErrorf
+        - innerJoin
+        - ensureStackTrace
+        - innerNew
+
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - golines
+  settings:
+    gci:
+      # Section configuration to compare against.
+      # Section names are case-insensitive and may contain parameters in ().
+      # The default order of sections is `standard > default > custom > blank > dot > alias > localmodule`.
+      # If `custom-order` is `true`, it follows the order of `sections` option.
+      # Default: ["standard", "default"]
+      sections:
+        - standard # Standard section: captures all standard packages.
+        - default # Default section: contains all imports that could not be matched to another section type.
+        - prefix(github.com/org/project) # Custom section: groups all imports with the specified Prefix.
+        - blank # Blank section: contains all blank imports. This section is not present unless explicitly enabled.
+        - dot # Dot section: contains all dot imports. This section is not present unless explicitly enabled.
+        - alias # Alias section: contains all alias imports. This section is not present unless explicitly enabled.
+        - localmodule # Local module section: contains all local packages. This section is not present unless explicitly enabled.
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0

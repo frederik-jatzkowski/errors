@@ -1,0 +1,101 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+      - "v*" # This triggers the workflow for pushes to main and version branches
+  pull_request:
+    branches:
+      - main
+      - "v*" # ... and for pull requests to main and version branches.
+
+  schedule:
+    - cron: '0 0 * * 0'  # Run weekly on Sundays at midnight UTC
+
+jobs:
+  test_go121:
+    name: Test go1.21 with Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.21" # ensure compatibility with go v1.21 onwards
+          cache: true
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v4
+      - name: Get dependencies
+        run: go mod tidy
+      - name: Test with Coverage
+        run: go test -coverprofile=coverage.out -coverpkg=./...,./internal ./...
+      - name: Ensure Above 90% Coverage
+        run: |
+          COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+          echo "Total coverage: ${COVERAGE}%"
+          if (( $(echo "$COVERAGE >= 90" | bc -l) )); then
+            echo "✅ Coverage ${COVERAGE}% meets requirement (≥90%)"
+          else
+            echo "❌ Coverage ${COVERAGE}% is below required 90%"
+            exit 1
+          fi
+  test_go122:
+    name: Test go1.22
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22" # ensure compatibility with latest stable go version
+          cache: true
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v4
+      - name: Get dependencies
+        run: go mod tidy
+      - name: Test
+        run: go test ./...
+  test_go123:
+    name: Test go1.23
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23" # ensure compatibility with latest stable go version
+          cache: true
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v4
+      - name: Get dependencies
+        run: go mod tidy
+      - name: Test
+        run: go test ./...
+  test_go124:
+    name: Test go1.24
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24" # ensure compatibility with latest stable go version
+          cache: true
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v4
+      - name: Get dependencies
+        run: go mod tidy
+      - name: Test
+        run: go test ./...
+  test_gostable:
+    name: Test stable go version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "stable" # ensure compatibility with latest stable go version
+          cache: true
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v4
+      - name: Get dependencies
+        run: go mod tidy
+      - name: Test
+        run: go test ./...
