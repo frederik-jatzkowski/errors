@@ -9,9 +9,7 @@ import (
 	"github.com/frederik-jatzkowski/errors"
 )
 
-var (
-	ErrSentinel = errors.New("sentinel error")
-)
+var ErrSentinel = errors.New("sentinel error")
 
 func SomeFunction12345() error {
 	return errors.New("test")

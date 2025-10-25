@@ -1,6 +1,9 @@
 # errors
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/frederik-jatzkowski/cantor.svg)](https://pkg.go.dev/github.com/frederik-jatzkowski/errors)
+[![Go Version](https://img.shields.io/badge/Go-1.21%2B-blue?logo=go)](https://golang.org/)
+[![Tests](https://github.com/frederik-jatzkowski/errors/actions/workflows/tests.yml/badge.svg)](https://github.com/frederik-jatzkowski/errors/actions/workflows/tests.yml)
+[![Linter](https://github.com/frederik-jatzkowski/errors/actions/workflows/linter.yml/badge.svg)](https://github.com/frederik-jatzkowski/errors/actions/workflows/linter.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/frederik-jatzkowski/errors)](https://goreportcard.com/report/github.com/frederik-jatzkowski/errors)
 
 A smart and idiomatic error handling library for the Go Programming Language adding stack traces.

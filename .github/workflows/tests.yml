@@ -1,0 +1,38 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+      - "v*" # This triggers the workflow for pushes to main and version branches
+  pull_request:
+    branches:
+      - main
+      - "v*" # ... and for pull requests to main and version branches.
+
+jobs:
+  test:
+    name: Test with Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "stable" # ensure compatibility with go v1.20 onwards
+          cache: true
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v4
+      - name: Get dependencies
+        run: go mod tidy
+      - name: Test with Coverage
+        run: go test -coverprofile=coverage.out -coverpkg=./...,./internal ./...
+      - name: Ensure Above 75% Coverage
+        run: |
+          COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+          echo "Total coverage: ${COVERAGE}%"
+          if (( $(echo "$COVERAGE >= 75" | bc -l) )); then
+            echo "✅ Coverage ${COVERAGE}% meets requirement (≥75%)"
+          else
+            echo "❌ Coverage ${COVERAGE}% is below required 75%"
+            exit 1
+          fi
