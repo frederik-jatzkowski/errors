@@ -1,6 +1,6 @@
 # errors
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/frederik-jatzkowski/cantor.svg)](https://pkg.go.dev/github.com/frederik-jatzkowski/errors)
+[![Go Reference](https://pkg.go.dev/badge/github.com/frederik-jatzkowski/errors.svg)](https://pkg.go.dev/github.com/frederik-jatzkowski/errors)
 [![Go Version](https://img.shields.io/badge/Go-1.21%2B-blue?logo=go)](https://golang.org/)
 [![Tests](https://github.com/frederik-jatzkowski/errors/actions/workflows/tests.yml/badge.svg)](https://github.com/frederik-jatzkowski/errors/actions/workflows/tests.yml)
 [![Linter](https://github.com/frederik-jatzkowski/errors/actions/workflows/linter.yml/badge.svg)](https://github.com/frederik-jatzkowski/errors/actions/workflows/linter.yml)
@@ -20,6 +20,7 @@ A smart and idiomatic error handling library for the Go Programming Language add
 - Locality of behaviour and low cognitive load.
 - Sentinel errors can be defined using `errors.Errorf` and `errors.New` or even `errors.Join`.
 - Easy conversion fom other error handling libraries:
+  - [Standard Library](https://pkg.go.dev/errors)
   - [github.com/pkg/errors](https://github.com/pkg/errors)
 
 This module allows both for human-readable output formatting using `err.Error()` or the `%v`/`%s` verbs
@@ -29,26 +30,39 @@ It just adds enough stack traces that the origin of root errors can be easily re
 So, the same error can be formatted as 
 
 ```
-call failed: doing a: something bad happened, doing b: external dependency error
+call failed: processing id 123: 
+    => double errorf: 
+        => something bad happened, 
+        => hi, abc
+    => something else happened
 ```
 
 or
 
 ```
-call failed: doing a: something bad happened
-    main.main
-        github.com/frederik-jatzkowski/errors/examples/errorf/main.go:14
-    internal/runtime/atomic.(*Uint32).Load
-        internal/runtime/atomic/types.go:194
-    runtime.goexit
-        runtime/asm_arm64.s:1224
-, doing b: external dependency error
-    main.main
-        github.com/frederik-jatzkowski/errors/examples/errorf/main.go:12
-    internal/runtime/atomic.(*Uint32).Load
-        internal/runtime/atomic/types.go:194
-    runtime.goexit
-        runtime/asm_arm64.s:1224
+call failed: processing id 123: 
+    => double errorf: 
+        => something bad happened
+            main.main
+                github.com/frederik-jatzkowski/errors/examples/nested/main.go:17
+            runtime/internal/atomic.(*Uint32).Load
+                runtime/internal/atomic/types.go:194
+            runtime.goexit
+                runtime/asm_arm64.s:1198, 
+        => hi, abc
+            main.main
+                github.com/frederik-jatzkowski/errors/examples/nested/main.go:20
+            runtime/internal/atomic.(*Uint32).Load
+                runtime/internal/atomic/types.go:194
+            runtime.goexit
+                runtime/asm_arm64.s:1198
+    => something else happened
+        main.main
+            github.com/frederik-jatzkowski/errors/examples/nested/main.go:23
+        runtime/internal/atomic.(*Uint32).Load
+            runtime/internal/atomic/types.go:194
+        runtime.goexit
+            runtime/asm_arm64.s:1198
 ```
 
 ## Enforce Proper Usage with Linters
@@ -74,6 +88,7 @@ linters:
         - pattern: ^fmt\.Errorf$
           pkg: ^fmt$
           msg: Use github.com/frederik-jatzkowski/errors.Errorf instead.
+        # Potentially disallow other error handling libraries
       analyze-types: true
 ```
 
@@ -85,6 +100,14 @@ linters:
     wrapcheck:
       report-internal-errors: true
 ```
+
+## Roadmap
+
+There are some additional features planned before reaching `v1`:
+- Forwarding of format verbs to nested errors. This allows for seamless step by step replacement.
+- Optionally runtime functions from stack traces during formatting.
+- Performance optimizations.
+- Hardening for enterprise grade stability.
 
 ## Performance
 
@@ -120,18 +143,16 @@ BenchmarkJoin_Deep50-12    	14128707	        82.86 ns/op
 
 Similar behaviour is observable for the other public functions of this package.
 
-# Caveats
+## Caveats
 
-- If you use other error libraries in the error tree, deeply nested stack traces will not be formatted.
-This is because we have to forward the `%+v` verb to the error containing the stack trace.
-If there is an error in the chain that does not implement `fmt.Formatter`,
-only `err.Error()` will be called for formatting.
+- If you use other error libraries in the error tree,
+stack trace information deeper in the tree might not be formatted.
 Because of this, you should use linters to prevent the usage of other error handling libraries in your code.
 - Many IDEs will warn you that using the `%w` verb is illegal in this libraries `errors.Errorf` function.
 This is a false positive and the official `govet` will not complain about this.
 This packages `errors.Errorf` fully supports the `%w` verb.
 
-# Acknowledgments
+## Acknowledgments
 
 > <sub>Gopher artwork © 2009 Renée French.  
 Used under the [Creative Commons Attribution 3.0 License](https://creativecommons.org/licenses/by/3.0/).  

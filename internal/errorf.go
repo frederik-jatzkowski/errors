@@ -1,34 +1,28 @@
 package internal
 
-import "fmt"
+import (
+	"fmt"
+
+	internalFormat "github.com/frederik-jatzkowski/errors/internal/format"
+)
 
 func Errorf(depth int, format string, args ...any) error {
 	// Hint for the govet printf analyzer to classify this as Errorf-like.
 	// nolint: forbidigo
 	err := fmt.Errorf(format, args...) // enable printf checking & %w
 
-	unwrapSingle, ok := err.(interface{ Unwrap() error })
-	if ok {
-		wrapped := unwrapSingle.Unwrap()
-		// nolint: wrapcheck
-		return EnsureStackTraceIfNecessary(depth+1, &ErrorfSingle{
-			format:  format,
-			args:    args,
-			Wrapped: wrapped,
-			Msg:     err.Error(),
-		}, []error{wrapped})
+	components := internalFormat.String(format).SplitIntoComponents(args)
+	if len(components.Errs) > 1 {
+		return EnsureStackTraceIfNecessary(depth+1, &ErrorfMany{
+			Components: components,
+		}, components.Errs)
 	}
 
-	unwrapMany, ok := err.(interface{ Unwrap() []error })
-	if ok {
-		wrapped := unwrapMany.Unwrap()
-		// nolint: wrapcheck
-		return EnsureStackTraceIfNecessary(depth+1, &ErrorfMany{
-			format:  format,
-			args:    args,
-			Wrapped: wrapped,
-			Msg:     err.Error(),
-		}, wrapped)
+	if len(components.Errs) == 1 {
+		return EnsureStackTraceIfNecessary(depth+1, &ErrorfSingle{
+			components: components,
+			Wrapped:    components.Errs[0],
+		}, components.Errs)
 	}
 
 	// nolint: wrapcheck

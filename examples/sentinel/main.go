@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	ErrSomethingWentWrong    = errors.New("something went wrong")
-	ErrSomthingElseWentWrong = errors.Errorf("something else went wrong")
+	ErrSomethingWentWrong     = errors.New("something went wrong")
+	ErrSomethingElseWentWrong = errors.Errorf("something else went wrong")
 )
 
 func main() {
@@ -17,7 +17,7 @@ func main() {
 		errors.Join(
 			ErrSomethingWentWrong,
 			errors.New("something bad happened"),
-			ErrSomthingElseWentWrong,
+			ErrSomethingElseWentWrong,
 		),
 	)
 

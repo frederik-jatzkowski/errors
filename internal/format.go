@@ -3,77 +3,50 @@ package internal
 import (
 	"fmt"
 	"runtime"
+
+	"github.com/frederik-jatzkowski/errors/internal/dto"
 )
 
 func (e *ErrorfMany) Format(s fmt.State, verb rune) {
 	switch {
 	case shouldPrintStack(s, verb):
-		e.formatWithStack(s, verb)
+		_ = e.ToDTO(nil).WriteLong(dto.NewWriter(s, 0))
 	case shouldPrintErrorMessage(s, verb):
-		// nolint: errcheck
-		fmt.Fprintf(s, fmt.FormatString(s, verb), e.Msg)
+		_ = e.ToDTO(nil).WriteShort(dto.NewWriter(s, 0))
 	default:
 		// nolint: errcheck
 		fmt.Fprintf(s, "%%!%c(%v)", verb, e)
 	}
-}
-
-func (e *ErrorfMany) formatWithStack(f fmt.State, verb rune) {
-	// nolint: errcheck
-	fmt.Fprintf(f, rewriteFormatString(e.format), e.args...)
 }
 
 func (e *ErrorfSingle) Format(s fmt.State, verb rune) {
 	switch {
 	case shouldPrintStack(s, verb):
-		e.formatWithStack(s, verb)
+		_ = e.ToDTO(nil).WriteLong(dto.NewWriter(s, 0))
 	case shouldPrintErrorMessage(s, verb):
-		// nolint: errcheck
-		fmt.Fprintf(s, fmt.FormatString(s, verb), e.Msg)
+		_ = e.ToDTO(nil).WriteShort(dto.NewWriter(s, 0))
 	default:
 		// nolint: errcheck
 		fmt.Fprintf(s, "%%!%c(%v)", verb, e)
 	}
 }
 
-func (e *ErrorfSingle) formatWithStack(f fmt.State, verb rune) {
-	// nolint: errcheck
-	fmt.Fprintf(f, rewriteFormatString(e.format), e.args...)
-}
-
-func (j *Join) Format(f fmt.State, verb rune) {
-	if len(j.Wrapped) > 1 {
-		// nolint: errcheck
-		fmt.Fprintln(f)
-	}
-	for _, err := range j.Wrapped {
-		delegateFormat(err, f, verb)
-
-		// nolint: errcheck
-		fmt.Fprintln(f)
+func (j *Join) Format(s fmt.State, verb rune) {
+	if shouldPrintStack(s, verb) {
+		_ = j.ToDTO(nil).WriteLong(dto.NewWriter(s, -1))
+	} else {
+		_ = j.ToDTO(nil).WriteShort(dto.NewWriter(s, -1))
 	}
 }
 
-func rewriteFormatString(format string) string {
-	rewritten := ""
-	isVerb := false
-	for _, r := range format {
-		switch {
-		case r == '%' && !isVerb:
-			isVerb = true
-		case r == 'w' && isVerb:
-			isVerb = false
-			rewritten += "+v"
-			continue
-		default:
-			isVerb = false
-
-		}
-
-		rewritten += string(r)
+func (err *WithStack) Format(s fmt.State, verb rune) {
+	if shouldPrintStack(s, verb) {
+		fmt.Fprintf(s, fmt.FormatString(s, verb), err.Inner)
+		fmt.Fprintf(s, fmt.FormatString(s, verb), err.St)
+	} else {
+		// nolint: errcheck
+		fmt.Fprintf(s, fmt.FormatString(s, verb), err.Inner)
 	}
-
-	return rewritten
 }
 
 func shouldPrintStack(s fmt.State, verb rune) bool {
@@ -82,11 +55,6 @@ func shouldPrintStack(s fmt.State, verb rune) bool {
 
 func shouldPrintErrorMessage(s fmt.State, verb rune) bool {
 	return verb == 'v' && !s.Flag('+') || verb == 's'
-}
-
-func delegateFormat(err error, s fmt.State, verb rune) {
-	// nolint: errcheck
-	fmt.Fprintf(s, fmt.FormatString(s, verb), err)
 }
 
 func (st *StackTrace) Format(s fmt.State, verb rune) {

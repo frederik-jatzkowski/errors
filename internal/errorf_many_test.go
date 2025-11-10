@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/frederik-jatzkowski/errors/internal"
+	"github.com/frederik-jatzkowski/errors/internal/format"
 )
 
 func Test_errorfMany(t *testing.T) {
@@ -17,8 +18,10 @@ func Test_errorfMany(t *testing.T) {
 	t.Run("As", func(t *testing.T) {
 		err := errors.New("hello world") // nolint: forbidigo
 		err = internal.EnsureStackTraceIfNecessary(2, &internal.ErrorfMany{
-			Msg:     "hi",
-			Wrapped: []error{err},
+			Components: format.Components{
+				Components: []any{"hi", err},
+				Errs:       []error{err},
+			},
 		}, []error{err})
 
 		assert.ErrorAs(t, err, &many)
@@ -29,8 +32,10 @@ func Test_errorfMany(t *testing.T) {
 	t.Run("Is", func(t *testing.T) {
 		err := errors.New("hello world") // nolint: forbidigo
 		err = internal.EnsureStackTraceIfNecessary(2, &internal.ErrorfMany{
-			Msg:     "hi",
-			Wrapped: []error{err},
+			Components: format.Components{
+				Components: []any{"hi", err},
+				Errs:       []error{err},
+			},
 		}, []error{err})
 
 		assert.ErrorIs(t, err, err)
@@ -40,8 +45,10 @@ func Test_errorfMany(t *testing.T) {
 		err1 := errors.New("error 1") // nolint: forbidigo
 		err2 := errors.New("error 2") // nolint: forbidigo
 		many := &internal.ErrorfMany{
-			Msg:     "multiple errors",
-			Wrapped: []error{err1, err2},
+			Components: format.Components{
+				Components: []any{"hi", err1, err2},
+				Errs:       []error{err1, err2},
+			},
 		}
 
 		unwrapped := many.Unwrap()
@@ -51,9 +58,12 @@ func Test_errorfMany(t *testing.T) {
 	})
 
 	t.Run("As edge cases", func(t *testing.T) {
+		err := errors.New("hello world")
 		many := &internal.ErrorfMany{
-			Msg:     "test error",
-			Wrapped: []error{errors.New("inner")}, // nolint: forbidigo
+			Components: format.Components{
+				Components: []any{"hi", err},
+				Errs:       []error{err},
+			},
 		}
 
 		// Test As with unsupported target type

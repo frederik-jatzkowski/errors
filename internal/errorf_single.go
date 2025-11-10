@@ -1,15 +1,19 @@
 package internal
 
+import (
+	"fmt"
+
+	"github.com/frederik-jatzkowski/errors/internal/format"
+)
+
 type ErrorfSingle struct {
-	Stack   *WithStack
-	format  string
-	Msg     string
-	Wrapped error
-	args    []interface{}
+	Stack      *WithStack
+	components format.Components
+	Wrapped    error
 }
 
 func (e *ErrorfSingle) Error() string {
-	return e.Msg
+	return fmt.Sprint(e)
 }
 
 func (e *ErrorfSingle) Unwrap() error {

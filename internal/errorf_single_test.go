@@ -17,7 +17,6 @@ func Test_errorfSingle(t *testing.T) {
 	t.Run("As", func(t *testing.T) {
 		err := errors.New("hello world") // nolint: forbidigo
 		err = internal.EnsureStackTraceIfNecessary(2, &internal.ErrorfSingle{
-			Msg:     "hi",
 			Wrapped: err,
 		}, []error{err})
 
@@ -29,7 +28,6 @@ func Test_errorfSingle(t *testing.T) {
 	t.Run("Is", func(t *testing.T) {
 		err := errors.New("hello world") // nolint: forbidigo
 		err = internal.EnsureStackTraceIfNecessary(2, &internal.ErrorfSingle{
-			Msg:     "hi",
 			Wrapped: err,
 		}, []error{err})
 
@@ -38,7 +36,6 @@ func Test_errorfSingle(t *testing.T) {
 
 	t.Run("As edge cases", func(t *testing.T) {
 		single := &internal.ErrorfSingle{
-			Msg:     "test error",
 			Wrapped: errors.New("inner"), // nolint: forbidigo
 		}
 

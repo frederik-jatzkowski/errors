@@ -15,5 +15,5 @@ func main() {
 		),
 	)
 
-	fmt.Printf("%+v", err)
+	fmt.Printf("%+v", errors.Join(err, err))
 }
