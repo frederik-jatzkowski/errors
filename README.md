@@ -5,6 +5,7 @@
 [![Tests](https://github.com/frederik-jatzkowski/errors/actions/workflows/tests.yml/badge.svg)](https://github.com/frederik-jatzkowski/errors/actions/workflows/tests.yml)
 [![Linter](https://github.com/frederik-jatzkowski/errors/actions/workflows/linter.yml/badge.svg)](https://github.com/frederik-jatzkowski/errors/actions/workflows/linter.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/frederik-jatzkowski/errors)](https://goreportcard.com/report/github.com/frederik-jatzkowski/errors)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A smart and idiomatic error handling library for the Go Programming Language adding stack traces.
 
@@ -12,13 +13,11 @@ A smart and idiomatic error handling library for the Go Programming Language add
 
 ## Explicit Design Goals
 
-- Drop-In replacement for the standard error handling in the "errors" and "fmt" packages
-  - Write idiomatic Go code
-  - No stack traces in sentinel errors
-  - Add stack traces whenever errors without stack traces enter the error tree.
+- Drop-In replacement for the standard error handling in the "errors" and "fmt" packages:
+- Write idiomatic Go code.
+- Add stack traces whenever needed.
 - Statically enforced best practices.
 - Locality of behaviour and low cognitive load.
-- Sentinel errors can be defined using `errors.Errorf` and `errors.New` or even `errors.Join`.
 - Easy conversion fom other error handling libraries:
   - [Standard Library](https://pkg.go.dev/errors)
   - [github.com/pkg/errors](https://github.com/pkg/errors)
@@ -62,86 +61,29 @@ call failed: processing id 123:
         runtime/internal/atomic.(*Uint32).Load
             runtime/internal/atomic/types.go:194
         runtime.goexit
-            runtime/asm_arm64.s:1198
+                runtime/asm_arm64.s:1198
 ```
 
-## Enforce Proper Usage with Linters
+## Learn More
 
-This showcase uses [golangci-lint v2](https://golangci-lint.run/docs/).
-
-In order to make sure, stack traces are properly applied at the boundaries to external modules,
-we can use the [wrapcheck](https://golangci-lint.run/docs/linters/configuration/#wrapcheck) linter.
-The default settings of wrapcheck already allow the recommended public api of this package.
-
-Also, configure `forbidigo` forbid usage of the standard `errors.*` and `fmt.Errorf` functionality:
-
-```yaml
-linters:
-  settings:
-    forbidigo:
-      forbid:
-        # disallow the entire stdlib errors package
-        - pattern: ^errors\..*$
-          pkg: ^errors$
-          msg: Use github.com/frederik-jatzkowski/errors.* instead.
-        # disallow fmt.Errorf
-        - pattern: ^fmt\.Errorf$
-          pkg: ^fmt$
-          msg: Use github.com/frederik-jatzkowski/errors.Errorf instead.
-        # Potentially disallow other error handling libraries
-      analyze-types: true
-```
-
-You may also enable `report-internal-errors` in the `wrapcheck` config to enforce very detailed human-readable error messages:
-
-```yaml
-linters:
-  settings:
-    wrapcheck:
-      report-internal-errors: true
-```
+Want to dive deeper? Check out our comprehensive [Package Tour](./docs/tour/00-intro.md) that covers:
+- Getting started and installation
+- Creating and wrapping errors
+- Stack trace management
+- Sentinel errors
+- Error formatting
+- Linter integration
+- Migration guides
+- Advanced topics
 
 ## Roadmap
 
 There are some additional features planned before reaching `v1`:
 - Forwarding of format verbs to nested errors. This allows for seamless step by step replacement.
-- Optionally runtime functions from stack traces during formatting.
+- Ignore certain function names in stack traces (eg. go runtime functions).
 - Performance optimizations.
 - Hardening for enterprise grade stability.
-
-## Performance
-
-There is some performance overhead to the addition of stack traces due to the necessary `runtime.Callers` call.
-However, adding new layers of nested errors is an amortized constant time effort per added layer.
-
-Standard Library Join without checks for stack traces:
-```
-goos: darwin
-goarch: arm64
-pkg: github.com/frederik-jatzkowski/errors
-cpu: Apple M2 Max
-BenchmarkStdJoin
-BenchmarkStdJoin-12    	57709878	        20.80 ns/op
-```
-
-When no stack exists, we have to do a `runtime.Callers` call:
-
-```
-BenchmarkJoin-12    	 1966750	       611.5 ns/op
-```
-
-
-After 5 nested layers and stack already exists:
-```
-BenchmarkJoin_Deep5-12    	14539718	        81.43 ns/op
-```
-
-After 50 nested layers:
-```
-BenchmarkJoin_Deep50-12    	14128707	        82.86 ns/op
-```
-
-Similar behaviour is observable for the other public functions of this package.
+- Defining a stripped prefix for function names.
 
 ## Caveats
 
