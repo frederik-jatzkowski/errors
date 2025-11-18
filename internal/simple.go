@@ -6,31 +6,30 @@ type Simple struct {
 }
 
 func NewSimple(depth int, text string) error {
-	// nolint: wrapcheck
 	return EnsureStackTraceIfNecessary(depth+1, &Simple{
 		Msg: text,
 	}, nil)
 }
 
-func (s *Simple) Error() string {
-	return s.Msg
+func (err *Simple) Error() string {
+	return err.Msg
 }
 
-func (s *Simple) SetWithStack(ws *WithStack) {
-	s.Stack = ws
+func (err *Simple) SetWithStack(ws *WithStack) {
+	err.Stack = ws
 }
 
-func (s *Simple) As(target any) bool {
+func (err *Simple) As(target any) bool {
 	switch t := target.(type) {
 	case **Simple:
-		*t = s
+		*t = err
 		return true
 	case **WithStack:
-		if s.Stack == nil {
+		if err.Stack == nil {
 			return false
 		}
 
-		*t = s.Stack
+		*t = err.Stack
 		return true
 	}
 

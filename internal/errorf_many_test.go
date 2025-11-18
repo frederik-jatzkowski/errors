@@ -16,7 +16,7 @@ func Test_errorfMany(t *testing.T) {
 	with := &internal.WithStack{}
 
 	t.Run("As", func(t *testing.T) {
-		err := errors.New("hello world") // nolint: forbidigo
+		err := errors.New("hello world")
 		err = internal.EnsureStackTraceIfNecessary(2, &internal.ErrorfMany{
 			Components: format.Components{
 				Components: []any{"hi", err},
@@ -30,7 +30,7 @@ func Test_errorfMany(t *testing.T) {
 	})
 
 	t.Run("Is", func(t *testing.T) {
-		err := errors.New("hello world") // nolint: forbidigo
+		err := errors.New("hello world")
 		err = internal.EnsureStackTraceIfNecessary(2, &internal.ErrorfMany{
 			Components: format.Components{
 				Components: []any{"hi", err},
@@ -42,8 +42,8 @@ func Test_errorfMany(t *testing.T) {
 	})
 
 	t.Run("Unwrap", func(t *testing.T) {
-		err1 := errors.New("error 1") // nolint: forbidigo
-		err2 := errors.New("error 2") // nolint: forbidigo
+		err1 := errors.New("error 1")
+		err2 := errors.New("error 2")
 		many := &internal.ErrorfMany{
 			Components: format.Components{
 				Components: []any{"hi", err1, err2},

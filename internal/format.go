@@ -31,17 +31,19 @@ func (e *ErrorfSingle) Format(s fmt.State, verb rune) {
 	}
 }
 
-func (j *Join) Format(s fmt.State, verb rune) {
+func (err *Join) Format(s fmt.State, verb rune) {
 	if shouldPrintStack(s, verb) {
-		_ = j.ToDTO(nil).WriteLong(dto.NewWriter(s, -1))
+		_ = err.ToDTO(nil).WriteLong(dto.NewWriter(s, -1))
 	} else {
-		_ = j.ToDTO(nil).WriteShort(dto.NewWriter(s, -1))
+		_ = err.ToDTO(nil).WriteShort(dto.NewWriter(s, -1))
 	}
 }
 
 func (err *WithStack) Format(s fmt.State, verb rune) {
 	if shouldPrintStack(s, verb) {
+		// nolint: errcheck
 		fmt.Fprintf(s, fmt.FormatString(s, verb), err.Inner)
+		// nolint: errcheck
 		fmt.Fprintf(s, fmt.FormatString(s, verb), err.St)
 	} else {
 		// nolint: errcheck

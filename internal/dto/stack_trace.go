@@ -21,7 +21,8 @@ func (st *StackTrace) WriteLong(w *Writer) error {
 			defer w.Ascend()
 
 			w.AddNewline()
-			_, err := w.Write([]byte(function.File + ":" + strconv.Itoa(function.Line)))
+
+			_, err = w.Write([]byte(function.File + ":" + strconv.Itoa(function.Line)))
 			if err != nil {
 				return err
 			}

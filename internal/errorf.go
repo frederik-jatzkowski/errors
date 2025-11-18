@@ -8,7 +8,7 @@ import (
 
 func Errorf(depth int, format string, args ...any) error {
 	// Hint for the govet printf analyzer to classify this as Errorf-like.
-	// nolint: forbidigo
+
 	err := fmt.Errorf(format, args...) // enable printf checking & %w
 
 	components := internalFormat.String(format).SplitIntoComponents(args)
@@ -25,7 +25,6 @@ func Errorf(depth int, format string, args ...any) error {
 		}, components.Errs)
 	}
 
-	// nolint: wrapcheck
 	return EnsureStackTraceIfNecessary(depth+1, &Simple{
 		Msg: err.Error(),
 	}, nil)

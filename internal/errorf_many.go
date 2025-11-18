@@ -7,8 +7,8 @@ import (
 )
 
 type ErrorfMany struct {
-	Components format.Components
 	Stack      *WithStack
+	Components format.Components
 }
 
 func (e *ErrorfMany) Error() string {

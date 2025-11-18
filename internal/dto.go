@@ -7,63 +7,63 @@ import (
 )
 
 func (e *ErrorfMany) ToDTO(stack *dto.StackTrace) *dto.Error {
-	err := &dto.Error{
+	result := &dto.Error{
 		Type:       "errorf",
 		Wrapped:    len(e.Components.Errs),
 		StackTrace: stack,
 	}
 
 	for _, component := range e.Components.Components {
-		err.Add(component)
+		result.Add(component)
 	}
 
-	return err
+	return result
 }
 
 func (e *ErrorfSingle) ToDTO(stack *dto.StackTrace) *dto.Error {
-	err := &dto.Error{
+	result := &dto.Error{
 		Type:       "errorf",
 		Wrapped:    1,
 		StackTrace: stack,
 	}
 
 	for _, component := range e.components.Components {
-		err.Add(component)
+		result.Add(component)
 	}
 
-	return err
+	return result
 }
 
-func (e *Join) ToDTO(stack *dto.StackTrace) *dto.Error {
-	err := &dto.Error{
+func (err *Join) ToDTO(stack *dto.StackTrace) *dto.Error {
+	result := &dto.Error{
 		Type:       "join",
-		Wrapped:    len(e.Wrapped),
+		Wrapped:    len(err.Wrapped),
 		StackTrace: stack,
 	}
 
-	for i, wrapped := range e.Wrapped {
-		err.Add(wrapped)
-		if i < len(e.Wrapped)-1 {
-			err.Add("\n")
+	for i, wrapped := range err.Wrapped {
+		result.Add(wrapped)
+		if i < len(err.Wrapped)-1 {
+			result.Add("\n")
 		}
 	}
 
-	return err
+	return result
 }
 
-func (e *Simple) ToDTO(stack *dto.StackTrace) *dto.Error {
-	err := &dto.Error{
+func (err *Simple) ToDTO(stack *dto.StackTrace) *dto.Error {
+	result := &dto.Error{
 		Type:       "new",
 		StackTrace: stack,
 	}
 
-	err.Add(e.Msg)
+	result.Add(err.Msg)
 
-	return err
+	return result
 }
 
-func (e *WithStack) ToDTO(_ *dto.StackTrace) *dto.Error {
-	return dto.NewError(e.Inner, e.St.ToDTO())
+func (err *WithStack) ToDTO(_ *dto.StackTrace) *dto.Error {
+	return dto.NewError(err.Inner, err.St.ToDTO())
 }
 
 func (st *StackTrace) ToDTO() *dto.StackTrace {

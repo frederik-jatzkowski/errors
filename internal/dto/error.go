@@ -1,10 +1,11 @@
+// Package dto provides a more suitable intermediate representation for marshalling errors into different output formats.
 package dto
 
 type Error struct {
+	StackTrace *StackTrace `json:"-"`
 	Type       string      `json:"type"`
 	Components []any       `json:"components"`
 	Wrapped    int         `json:"wrapped"`
-	StackTrace *StackTrace `json:"-"`
 }
 
 var _ DTO = (*Error)(nil)
@@ -48,14 +49,12 @@ func (e *Error) WriteShort(w *Writer) error {
 
 					_, err := w.Write([]byte("=> "))
 					if err != nil {
-						// nolint: wrapcheck
 						return err
 					}
 				}
 
 				err := dto.WriteShort(w)
 				if err != nil {
-					// nolint: wrapcheck
 					return err
 				}
 				return nil
@@ -69,7 +68,6 @@ func (e *Error) WriteShort(w *Writer) error {
 		if ok {
 			_, err := w.Write([]byte(str))
 			if err != nil {
-				// nolint: wrapcheck
 				return err
 			}
 		}
@@ -99,7 +97,6 @@ func (e *Error) WriteLong(w *Writer) error {
 
 				err := dto.WriteLong(w)
 				if err != nil {
-					// nolint: wrapcheck
 					return err
 				}
 				return nil
@@ -119,8 +116,10 @@ func (e *Error) WriteLong(w *Writer) error {
 	}
 
 	if e.StackTrace != nil {
-		// nolint: errcheck
-		e.StackTrace.WriteLong(w)
+		err := e.StackTrace.WriteLong(w)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

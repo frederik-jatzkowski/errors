@@ -87,7 +87,7 @@ func TestWithStack(t *testing.T) {
 	})
 
 	t.Run("add stack to error", func(t *testing.T) {
-		originalErr := fmt.Errorf("standard error") // nolint: forbidigo
+		originalErr := fmt.Errorf("standard error")
 		stackErr := WithStack(originalErr)
 
 		assert.NotNil(t, stackErr)
@@ -110,7 +110,7 @@ func TestWrap(t *testing.T) {
 	})
 
 	t.Run("wrap error with message", func(t *testing.T) {
-		originalErr := fmt.Errorf("original error") // nolint: forbidigo
+		originalErr := fmt.Errorf("original error")
 		wrappedErr := Wrap(originalErr, "wrapper message")
 
 		assert.NotNil(t, wrappedErr)
@@ -129,7 +129,7 @@ func TestWrapf(t *testing.T) {
 	})
 
 	t.Run("wrap error with formatted message", func(t *testing.T) {
-		originalErr := fmt.Errorf("original error") // nolint: forbidigo
+		originalErr := fmt.Errorf("original error")
 		wrappedErr := Wrapf(originalErr, "wrapper %d: %s", 123, "context")
 
 		assert.NotNil(t, wrappedErr)

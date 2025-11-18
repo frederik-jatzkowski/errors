@@ -47,6 +47,18 @@ linters:
         - innerJoin
         - ensureStackTrace
         - innerNew
+  exclusions:
+    rules:
+      # Exclude some linters from running on tests files.
+      - path: _test\.go
+        linters:
+          - forbidigo
+          - wrapcheck
+      # Run some linters only in examples
+      - path-except: examples/*
+        linters:
+          - forbidigo
+          - wrapcheck
 
 formatters:
   enable:

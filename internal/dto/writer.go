@@ -25,8 +25,10 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 		}
 		w.Indent()
 
-		// nolint: errcheck
-		w.inner.Write([]byte(line))
+		_, err := w.inner.Write([]byte(line))
+		if err != nil {
+			return 0, err
+		}
 
 		w.isAfterNewline = true
 	}

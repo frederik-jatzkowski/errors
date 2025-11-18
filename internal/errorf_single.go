@@ -7,9 +7,9 @@ import (
 )
 
 type ErrorfSingle struct {
+	Wrapped    error
 	Stack      *WithStack
 	components format.Components
-	Wrapped    error
 }
 
 func (e *ErrorfSingle) Error() string {

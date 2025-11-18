@@ -1,3 +1,4 @@
+// Package format provides functionality to work with format strings.
 package format
 
 import (
@@ -17,7 +18,10 @@ func (s String) SplitIntoComponents(args []any) (components Components) {
 	}
 
 	for len(remainingFormat) > 0 {
-		prefix, errOut, remainingFormat, remainingArgs = s.ProceedToNextError(remainingFormat, remainingArgs)
+		prefix, errOut, remainingFormat, remainingArgs = s.ProceedToNextError(
+			remainingFormat,
+			remainingArgs,
+		)
 		if prefix != "" {
 			components.Components = append(components.Components, prefix)
 		}
@@ -35,7 +39,15 @@ func (s String) SplitIntoComponents(args []any) (components Components) {
 	return components
 }
 
-func (s String) ProceedToNextError(format []rune, args []any) (prefix string, err error, remainingFormat []rune, remainingArgs []any) {
+func (s String) ProceedToNextError(
+	format []rune,
+	args []any,
+) (
+	prefix string,
+	err error, // nolint: staticcheck
+	remainingFormat []rune,
+	remainingArgs []any,
+) {
 	iArg := 0
 
 	currentPartialFormat := ""
