@@ -19,35 +19,34 @@ func NewJoin(depth int, errs ...error) error {
 		return nil
 	}
 
-	// nolint: wrapcheck
 	return EnsureStackTraceIfNecessary(depth+1, &Join{
 		Wrapped: errs,
 	}, errs)
 }
 
-func (j *Join) Error() string {
-	return fmt.Sprint(j)
+func (err *Join) Error() string {
+	return fmt.Sprint(err)
 }
 
-func (j *Join) Unwrap() []error {
-	return j.Wrapped
+func (err *Join) Unwrap() []error {
+	return err.Wrapped
 }
 
-func (j *Join) SetWithStack(ws *WithStack) {
-	j.Stack = ws
+func (err *Join) SetWithStack(ws *WithStack) {
+	err.Stack = ws
 }
 
-func (j *Join) As(target any) bool {
+func (err *Join) As(target any) bool {
 	switch t := target.(type) {
 	case **Join:
-		*t = j
+		*t = err
 		return true
 	case **WithStack:
-		if j.Stack == nil {
+		if err.Stack == nil {
 			return false
 		}
 
-		*t = j.Stack
+		*t = err.Stack
 		return true
 	}
 

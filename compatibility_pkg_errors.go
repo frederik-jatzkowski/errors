@@ -24,7 +24,7 @@ func Cause(err error) error {
 	}
 
 	if causer, ok := err.(interface{ Cause() error }); ok {
-		return causer.Cause() // nolint: wrapcheck
+		return causer.Cause()
 	}
 
 	return err
@@ -80,7 +80,6 @@ func WithMessagef(err error, format string, args ...any) error {
 // Deprecated: Use the recommended API of this module instead. Stack traces are
 // automatically added by [New], [Errorf], and [Join] functions.
 func WithStack(err error) error {
-	// nolint: wrapcheck
 	return internal.NewJoin(1, err)
 }
 

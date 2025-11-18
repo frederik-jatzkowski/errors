@@ -40,7 +40,6 @@ func EnsureStackTraceIfNecessary(depth int, err Error, shouldHaveStack []error) 
 		actuallyHavingStacks int
 	)
 	for _, err2 := range shouldHaveStack {
-		// nolint: forbidigo
 		if errors.As(err2, &trace) {
 			if actuallyHavingStacks == 0 {
 				err.SetWithStack(trace)

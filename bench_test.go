@@ -14,13 +14,13 @@ func BenchmarkNew(b *testing.B) {
 
 func BenchmarkStdNew(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_ = errors.New("test") // nolint: forbidigo
+		_ = errors.New("test")
 	}
 }
 
 func BenchmarkErrorf(b *testing.B) {
-	err1 := errors.New("err1") // nolint: forbidigo
-	err2 := errors.New("err2") // nolint: forbidigo
+	err1 := errors.New("err1")
+	err2 := errors.New("err2")
 
 	b.ResetTimer()
 
@@ -30,7 +30,7 @@ func BenchmarkErrorf(b *testing.B) {
 }
 
 func BenchmarkErrorf_stackExists(b *testing.B) {
-	err1 := errors.New("err1") // nolint: forbidigo
+	err1 := errors.New("err1")
 	err2 := New("err2")
 
 	b.ResetTimer()
@@ -41,19 +41,19 @@ func BenchmarkErrorf_stackExists(b *testing.B) {
 }
 
 func BenchmarkStdErrorf(b *testing.B) {
-	err1 := errors.New("err1") // nolint: forbidigo
-	err2 := errors.New("err2") // nolint: forbidigo
+	err1 := errors.New("err1")
+	err2 := errors.New("err2")
 
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		_ = fmt.Errorf("%s %w %w", "hi", err1, err2) // nolint: forbidigo
+		_ = fmt.Errorf("%s %w %w", "hi", err1, err2)
 	}
 }
 
 func BenchmarkJoin(b *testing.B) {
-	err1 := errors.New("err1") // nolint: forbidigo
-	err2 := errors.New("err2") // nolint: forbidigo
+	err1 := errors.New("err1")
+	err2 := errors.New("err2")
 
 	b.ResetTimer()
 
@@ -63,7 +63,7 @@ func BenchmarkJoin(b *testing.B) {
 }
 
 func BenchmarkJoin_stackExists(b *testing.B) {
-	err1 := errors.New("err1") // nolint: forbidigo
+	err1 := errors.New("err1")
 	err2 := New("err2")
 
 	b.ResetTimer()
@@ -74,13 +74,13 @@ func BenchmarkJoin_stackExists(b *testing.B) {
 }
 
 func BenchmarkStdJoin(b *testing.B) {
-	err1 := errors.New("err1") // nolint: forbidigo
-	err2 := errors.New("err2") // nolint: forbidigo
+	err1 := errors.New("err1")
+	err2 := errors.New("err2")
 
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		_ = errors.Join(err1, err2) // nolint: forbidigo
+		_ = errors.Join(err1, err2)
 	}
 }
 

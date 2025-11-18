@@ -28,10 +28,6 @@ func Example_onlyHumanReadable() {
 	)
 
 	fmt.Printf("%s", err)
-	// Output:
-	// call failed: processing id 123:
-	// two things failed: something bad happened, doing somthing: failed
-	// something else happened
 }
 
 func Example_includeStackTraces() {

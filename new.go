@@ -6,5 +6,5 @@ import "github.com/frederik-jatzkowski/errors/internal"
 //
 // If it is called from a sentinel context, no stack trace is added.
 func New(text string) error {
-	return internal.NewSimple(1, text) // nolint: wrapcheck
+	return internal.NewSimple(1, text)
 }

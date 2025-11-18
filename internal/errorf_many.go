@@ -1,15 +1,18 @@
 package internal
 
+import (
+	"fmt"
+
+	"github.com/frederik-jatzkowski/errors/internal/format"
+)
+
 type ErrorfMany struct {
-	format  string
-	args    []interface{}
-	Msg     string
-	Stack   *WithStack
-	Wrapped []error
+	Stack      *WithStack
+	Components format.Components
 }
 
 func (e *ErrorfMany) Error() string {
-	return e.Msg
+	return fmt.Sprint(e)
 }
 
 func (e *ErrorfMany) SetWithStack(ws *WithStack) {
@@ -34,5 +37,5 @@ func (e *ErrorfMany) As(target any) bool {
 }
 
 func (e *ErrorfMany) Unwrap() []error {
-	return e.Wrapped
+	return e.Components.Errs
 }
