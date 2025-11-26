@@ -96,4 +96,3 @@ Now that you understand the basics, let's dive deeper into creating errors. In t
 ---
 
 **Previous**: [Introduction](./00-intro.md) | **Next**: [Creating Errors](./02-creating-errors.md)
-

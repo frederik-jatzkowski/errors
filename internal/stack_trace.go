@@ -2,7 +2,6 @@ package internal
 
 import (
 	"errors"
-	"fmt"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -14,10 +13,6 @@ func NewStackTrace(depth int) *StackTrace {
 	record := &StackTrace{}
 	runtime.Callers(depth+2, record.Stack0[:])
 	return record
-}
-
-func (st *StackTrace) String() string {
-	return fmt.Sprintf("%+v", st)
 }
 
 func (st *StackTrace) IsSentinel() bool {

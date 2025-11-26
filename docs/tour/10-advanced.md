@@ -56,6 +56,22 @@ if errors.As(wrapped, &valErr) {
 Using external errors is not a problem as long as they do not wrap errors of this library in them.
 If you wrap an error of this package with an external one, stack traces beyond will be ignored.
 
+If you need to preserve stack trace information from external error libraries (e.g., during gradual migration), you can enable advanced formatting:
+
+```go
+func main() {
+    errors.EnableAdvancedFormattingOfExternalErrors()
+    // ... rest of your application
+}
+```
+
+This setting forwards the `%+v` verb to external errors, providing more debugging information. However, this comes with trade-offs:
+- **More debugging info**: Stack traces from external libraries are preserved
+- **Potential redundancy**: You may see duplicate or redundant stack traces
+- **Formatting inconsistencies**: External error formatting may not align perfectly with this package's style
+
+Use this setting judiciously, primarily during migration periods or when you need to debug issues involving external error libraries.
+
 ### Caveat 2: IDE Warnings About `%w`
 
 Some IDEs may warn that `%w` is illegal in `errors.Errorf()`.

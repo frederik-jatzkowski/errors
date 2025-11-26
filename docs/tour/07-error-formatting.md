@@ -48,11 +48,33 @@ fmt.Printf("%+v\n", err)
 //         runtime/asm_arm64.s:1224
 ```
 
+## Formatting External Errors
+
+When mixing this package with other error handling libraries (e.g., during migration), you may want to preserve stack trace information from external errors. By default, the `%+v` verb is not forwarded to external errors to maintain consistent formatting.
+
+However, you can enable advanced formatting of external errors by calling `EnableAdvancedFormattingOfExternalErrors()` once in your `main` function:
+
+```go
+func main() {
+    errors.EnableAdvancedFormattingOfExternalErrors()
+    // ... rest of your application
+}
+```
+
+This setting allows forwarding of the `%+v` verb to external errors, which can provide more debugging information when working with errors from other libraries. However, keep in mind:
+
+- **More debugging info**: You'll get additional stack traces from external error libraries
+- **Potential redundancy**: You might see duplicate or redundant stack traces
+- **Formatting inconsistencies**: The formatting of external errors might not align perfectly with this package's formatting style
+
+This is particularly useful during gradual migration from other error handling libraries, as it helps preserve debugging information while you transition.
+
 ## Key Takeaways
 
 1. **`%v` and `%s`**: Show just the error message (human-readable)
 2. **`%+v`**: Shows error message plus stack trace (debug mode)
 3. **Never expose stack traces to users**: Always use `%v` or `err.Error()` for user-facing errors
+4. **External errors**: Use `EnableAdvancedFormattingOfExternalErrors()` if you need to preserve stack traces from other error libraries
 
 ## What's Next?
 
