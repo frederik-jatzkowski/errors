@@ -5,10 +5,10 @@ type WithStack struct {
 	St    *StackTrace
 }
 
-func (err *WithStack) Error() string {
-	return err.Inner.Error()
+func (e *WithStack) Error() string {
+	return e.Inner.Error()
 }
 
-func (err *WithStack) Unwrap() error {
-	return err.Inner
+func (e *WithStack) Unwrap() error {
+	return e.Inner
 }

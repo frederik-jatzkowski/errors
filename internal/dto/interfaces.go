@@ -1,10 +1,11 @@
 package dto
 
+import "github.com/frederik-jatzkowski/errors/internal/settings"
+
 type ToDTOer interface {
-	ToDTO(stack *StackTrace) *Error
+	ToDTO(stack *StackTrace, settings *settings.Settings) *Error
 }
 
 type DTO interface {
-	WriteShort(w *Writer) error
-	WriteLong(w *Writer) error
+	Write(w *Writer) error
 }

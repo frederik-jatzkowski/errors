@@ -121,4 +121,3 @@ Now that you understand how to create, wrap, and join errors, let's dive deep in
 ---
 
 **Previous**: [Wrapping Errors](./03-wrapping-errors.md) | **Next**: [Stack Traces Deep Dive](./05-stack-traces.md)
-

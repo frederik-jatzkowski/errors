@@ -1,8 +1,14 @@
 // Package dto provides a more suitable intermediate representation for marshalling errors into different output formats.
 package dto
 
+import (
+	"fmt"
+
+	"github.com/frederik-jatzkowski/errors/internal/settings"
+)
+
 type Error struct {
-	StackTrace *StackTrace `json:"-"`
+	StackTrace *StackTrace `json:"stack_trace,omitempty"`
 	Type       string      `json:"type"`
 	Components []any       `json:"components"`
 	Wrapped    int         `json:"wrapped"`
@@ -10,23 +16,30 @@ type Error struct {
 
 var _ DTO = (*Error)(nil)
 
-func NewError(err error, stack *StackTrace) *Error {
+func NewError(err error, stack *StackTrace, s *settings.Settings) *Error {
 	toDTOer, ok := err.(ToDTOer)
 	if !ok {
+		var wrapped string
+		if s.ShouldForwardVerbs && s.Detail == settings.DetailFullStackTrace {
+			wrapped = fmt.Sprintf("%+v", err)
+		} else {
+			wrapped = err.Error()
+		}
+
 		return &Error{
 			Type:       "external",
-			Components: []any{err.Error()},
+			Components: []any{wrapped},
 			StackTrace: stack,
 		}
 	}
 
-	return toDTOer.ToDTO(stack)
+	return toDTOer.ToDTO(stack, s)
 }
 
-func (e *Error) Add(component any) {
+func (e *Error) Add(component any, s *settings.Settings) {
 	err, ok := component.(error)
 	if ok {
-		e.Components = append(e.Components, NewError(err, nil))
+		e.Components = append(e.Components, NewError(err, nil, s))
 
 		return
 	}
@@ -34,7 +47,7 @@ func (e *Error) Add(component any) {
 	e.Components = append(e.Components, component)
 }
 
-func (e *Error) WriteShort(w *Writer) error {
+func (e *Error) Write(w *Writer) error {
 	for _, component := range e.Components {
 		dto, ok := component.(DTO)
 		if ok {
@@ -53,49 +66,7 @@ func (e *Error) WriteShort(w *Writer) error {
 					}
 				}
 
-				err := dto.WriteShort(w)
-				if err != nil {
-					return err
-				}
-				return nil
-			}()
-			if err != nil {
-				return err
-			}
-		}
-
-		str, ok := component.(string)
-		if ok {
-			_, err := w.Write([]byte(str))
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
-}
-
-func (e *Error) WriteLong(w *Writer) error {
-	for _, component := range e.Components {
-		dto, ok := component.(DTO)
-		if ok {
-			err := func() error {
-				if e.Wrapped > 1 {
-					if !w.IsAfterNewline() {
-						w.AddNewline()
-					}
-
-					w.Descend()
-					defer w.Ascend()
-
-					_, err := w.Write([]byte("=> "))
-					if err != nil {
-						return err
-					}
-				}
-
-				err := dto.WriteLong(w)
+				err := dto.Write(w)
 				if err != nil {
 					return err
 				}
@@ -116,7 +87,7 @@ func (e *Error) WriteLong(w *Writer) error {
 	}
 
 	if e.StackTrace != nil {
-		err := e.StackTrace.WriteLong(w)
+		err := e.StackTrace.Write(w)
 		if err != nil {
 			return err
 		}

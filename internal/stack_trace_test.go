@@ -37,15 +37,6 @@ func Test_stackTrace_isSentinel_false(t *testing.T) {
 	assert.False(t, with.St.IsSentinel())
 }
 
-func Test_stackTrace_String(t *testing.T) {
-	with, ok := errors.New("test").(*internal.WithStack)
-	require.True(t, ok)
-
-	str := with.St.String()
-	assert.NotEmpty(t, str)
-	assert.Contains(t, str, "Test_stackTrace_String")
-}
-
 func Test_stackTrace_isSentinel_edge_cases(t *testing.T) {
 	t.Run("empty stack", func(t *testing.T) {
 		st := &internal.StackTrace{}
@@ -61,13 +52,5 @@ func Test_stackTrace_Format_edge_cases(t *testing.T) {
 		// Test with # flag to trigger the different format path
 		result := fmt.Sprintf("%#v", with.St)
 		assert.NotEmpty(t, result)
-	})
-}
-
-func Test_formatFrame_edge_cases(t *testing.T) {
-	t.Run("invalid PC", func(t *testing.T) {
-		// Test with invalid PC value (0) to trigger the "unknown" case
-		result := internal.FormatFrame(0)
-		assert.Equal(t, "unknown", result)
 	})
 }

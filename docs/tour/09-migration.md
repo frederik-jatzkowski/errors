@@ -61,6 +61,19 @@ replace github.com/pkg/errors => github.com/frederik-jatzkowski/errors
 This package provides compatibility functions for `pkg/errors`.
 Fade them out gradually.
 
+### Optional - Enable Advanced Formatting
+
+During gradual migration, if you want to preserve stack trace information from `pkg/errors` or other external error libraries, you can enable advanced formatting:
+
+```go
+func main() {
+    errors.EnableAdvancedFormattingOfExternalErrors()
+    // ... rest of your application
+}
+```
+
+This setting forwards the `%+v` verb to external errors, which can be helpful during the transition period but may result in redundant stack traces and formatting inconsistencies.
+
 ## What's Next?
 
 In the final lesson, we'll explore advanced topics including custom error types and edge cases.

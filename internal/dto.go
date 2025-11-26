@@ -4,9 +4,10 @@ import (
 	"runtime"
 
 	"github.com/frederik-jatzkowski/errors/internal/dto"
+	"github.com/frederik-jatzkowski/errors/internal/settings"
 )
 
-func (e *ErrorfMany) ToDTO(stack *dto.StackTrace) *dto.Error {
+func (e *ErrorfMany) ToDTO(stack *dto.StackTrace, s *settings.Settings) *dto.Error {
 	result := &dto.Error{
 		Type:       "errorf",
 		Wrapped:    len(e.Components.Errs),
@@ -14,13 +15,13 @@ func (e *ErrorfMany) ToDTO(stack *dto.StackTrace) *dto.Error {
 	}
 
 	for _, component := range e.Components.Components {
-		result.Add(component)
+		result.Add(component, s)
 	}
 
 	return result
 }
 
-func (e *ErrorfSingle) ToDTO(stack *dto.StackTrace) *dto.Error {
+func (e *ErrorfSingle) ToDTO(stack *dto.StackTrace, s *settings.Settings) *dto.Error {
 	result := &dto.Error{
 		Type:       "errorf",
 		Wrapped:    1,
@@ -28,13 +29,13 @@ func (e *ErrorfSingle) ToDTO(stack *dto.StackTrace) *dto.Error {
 	}
 
 	for _, component := range e.components.Components {
-		result.Add(component)
+		result.Add(component, s)
 	}
 
 	return result
 }
 
-func (err *Join) ToDTO(stack *dto.StackTrace) *dto.Error {
+func (err *Join) ToDTO(stack *dto.StackTrace, s *settings.Settings) *dto.Error {
 	result := &dto.Error{
 		Type:       "join",
 		Wrapped:    len(err.Wrapped),
@@ -42,28 +43,35 @@ func (err *Join) ToDTO(stack *dto.StackTrace) *dto.Error {
 	}
 
 	for i, wrapped := range err.Wrapped {
-		result.Add(wrapped)
+		result.Add(wrapped, s)
 		if i < len(err.Wrapped)-1 {
-			result.Add("\n")
+			result.Add("\n", s)
 		}
 	}
 
 	return result
 }
 
-func (err *Simple) ToDTO(stack *dto.StackTrace) *dto.Error {
+func (err *Simple) ToDTO(stack *dto.StackTrace, s *settings.Settings) *dto.Error {
 	result := &dto.Error{
 		Type:       "new",
 		StackTrace: stack,
 	}
 
-	result.Add(err.Msg)
+	result.Add(err.Msg, s)
 
 	return result
 }
 
-func (err *WithStack) ToDTO(_ *dto.StackTrace) *dto.Error {
-	return dto.NewError(err.Inner, err.St.ToDTO())
+func (e *WithStack) ToDTO(_ *dto.StackTrace, s *settings.Settings) *dto.Error {
+	switch s.Detail {
+	case settings.DetailFullStackTrace:
+		return dto.NewError(e.Inner, e.St.ToDTO(), s)
+	case settings.DetailSimple:
+		fallthrough
+	default:
+		return dto.NewError(e.Inner, nil, s)
+	}
 }
 
 func (st *StackTrace) ToDTO() *dto.StackTrace {

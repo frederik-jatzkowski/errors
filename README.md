@@ -85,11 +85,27 @@ There are some additional features planned before reaching `v1`:
 - Hardening for enterprise grade stability.
 - Defining a stripped prefix for function names.
 
+## Settings
+
+### EnableAdvancedFormattingOfExternalErrors
+
+If you're mixing this package with other error handling libraries (e.g., during migration), you can enable advanced formatting of external errors by calling `EnableAdvancedFormattingOfExternalErrors()` once in your `main` function. This allows forwarding of the `%+v` verb to external errors, providing more stack trace information from other error handling libraries.
+
+Keep in mind that this adds valuable debugging information but might also lead to redundant stack traces. Additionally, the formatting of wrapped errors might not work as nicely with the formatting of this package.
+
+```go
+func main() {
+    errors.EnableAdvancedFormattingOfExternalErrors()
+    // ... rest of your application
+}
+```
+
 ## Caveats
 
 - If you use other error libraries in the error tree,
 stack trace information deeper in the tree might not be formatted.
 Because of this, you should use linters to prevent the usage of other error handling libraries in your code.
+You can use `EnableAdvancedFormattingOfExternalErrors()` to improve formatting during gradual migration.
 - Many IDEs will warn you that using the `%w` verb is illegal in this libraries `errors.Errorf` function.
 This is a false positive and the official `govet` will not complain about this.
 This packages `errors.Errorf` fully supports the `%w` verb.

@@ -6,7 +6,13 @@ type StackTrace struct {
 	Functions []Function `json:"functions"`
 }
 
-func (st *StackTrace) WriteLong(w *Writer) error {
+type Function struct {
+	Name string `json:"name"`
+	File string `json:"file"`
+	Line int    `json:"line"`
+}
+
+func (st *StackTrace) Write(w *Writer) error {
 	w.Descend()
 	defer w.Ascend()
 	for _, function := range st.Functions {
