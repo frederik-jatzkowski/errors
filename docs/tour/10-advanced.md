@@ -60,7 +60,9 @@ If you need to preserve stack trace information from external error libraries (e
 
 ```go
 func main() {
-    errors.EnableAdvancedFormattingOfExternalErrors()
+    errors.GlobalFormatSettings(
+        errors.WithAdvancedFormattingOfExternalErrors(),
+    )
     // ... rest of your application
 }
 ```
@@ -110,7 +112,7 @@ After 50 nested layers:
 BenchmarkJoin_Deep50-12    	14128707	        82.86 ns/op
 ```
 
-Similar behaviour is observable for the other public functions of this package.
+Similar behavior is observable for the other public functions of this package.
 
 ## Conclusion
 

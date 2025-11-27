@@ -6,6 +6,6 @@ type Detail byte
 const (
 	// DetailSimple represents a simple error message
 	DetailSimple Detail = iota
-	// DetailFullStackTrace represents a error message with full stack trace information
-	DetailFullStackTrace
+	// DetailStackTrace represents a error message with full stack trace information
+	DetailStackTrace
 )

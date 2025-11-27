@@ -148,3 +148,4 @@ Now that you understand sentinel errors, let's explore all the formatting option
 ---
 
 **Previous**: [Stack Traces Deep Dive](./05-stack-traces.md) | **Next**: [Error Formatting](./07-error-formatting.md)
+

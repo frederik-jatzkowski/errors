@@ -20,7 +20,7 @@ func NewError(err error, stack *StackTrace, s *settings.Settings) *Error {
 	toDTOer, ok := err.(ToDTOer)
 	if !ok {
 		var wrapped string
-		if s.ShouldForwardVerbs && s.Detail == settings.DetailFullStackTrace {
+		if s.ShouldForwardVerbs && s.Detail == settings.DetailStackTrace {
 			wrapped = fmt.Sprintf("%+v", err)
 		} else {
 			wrapped = err.Error()

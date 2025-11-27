@@ -67,7 +67,9 @@ During gradual migration, if you want to preserve stack trace information from `
 
 ```go
 func main() {
-    errors.EnableAdvancedFormattingOfExternalErrors()
+    errors.GlobalFormatSettings(
+        errors.WithAdvancedFormattingOfExternalErrors(),
+    )
     // ... rest of your application
 }
 ```

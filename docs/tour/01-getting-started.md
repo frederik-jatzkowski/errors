@@ -71,10 +71,6 @@ With stack trace (%+v):
 something went wrong
     main.main
         /path/to/your/main.go:8
-    runtime.main
-        runtime/proc.go:250
-    runtime.goexit
-        runtime/asm_arm64.s:1224
 ```
 
 **This is the core feature**: The same error can be formatted two ways:

@@ -15,7 +15,7 @@ func Example_onlyHumanReadable() {
 			"processing id %d:%w",
 			123,
 			errors.Join(
-				errors.Errorf("two things failed: %w, %w",
+				errors.Errorf("two things failed:%w,%w",
 					errors.New("something bad happened"),
 					errors.Errorf(
 						"doing somthing: %w",
@@ -28,6 +28,12 @@ func Example_onlyHumanReadable() {
 	)
 
 	fmt.Printf("%s", err)
+	// Output:
+	// call failed: processing id 123:
+	//     => two things failed:
+	//         => something bad happened,
+	//         => doing somthing: failed
+	//     => something else happened
 }
 
 func Example_includeStackTraces() {
