@@ -10,9 +10,9 @@ var Defaults = Settings{
 
 // Settings represents the available settings for error formatting
 type Settings struct {
+	IgnoredFunctionPrefixes []string
 	Detail                  Detail
 	ShouldForwardVerbs      bool
-	IgnoredFunctionPrefixes []string
 }
 
 func (s *Settings) CloneWithDetail(detail Detail) *Settings {
