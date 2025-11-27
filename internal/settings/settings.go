@@ -3,7 +3,7 @@ package settings
 
 // Defaults contains all the default Settings of this package. It will be used whenever.
 var Defaults = Settings{
-	Detail:                  DetailSimple,
+	ShowStackTrace:          false,
 	ShouldForwardVerbs:      false,
 	IgnoredFunctionPrefixes: []string{"runtime", "internal/runtime", "testing"},
 }
@@ -11,12 +11,12 @@ var Defaults = Settings{
 // Settings represents the available settings for error formatting
 type Settings struct {
 	IgnoredFunctionPrefixes []string
-	Detail                  Detail
+	ShowStackTrace          bool
 	ShouldForwardVerbs      bool
 }
 
-func (s *Settings) CloneWithDetail(detail Detail) *Settings {
+func (s *Settings) CloneWithStackTrace() *Settings {
 	result := *s
-	result.Detail = detail
+	result.ShowStackTrace = true
 	return &result
 }
