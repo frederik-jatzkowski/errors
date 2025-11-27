@@ -2,6 +2,7 @@ package internal
 
 import (
 	"runtime"
+	"strings"
 
 	"github.com/frederik-jatzkowski/errors/internal/dto"
 	"github.com/frederik-jatzkowski/errors/internal/settings"
@@ -65,8 +66,8 @@ func (err *Simple) ToDTO(stack *dto.StackTrace, s *settings.Settings) *dto.Error
 
 func (e *WithStack) ToDTO(_ *dto.StackTrace, s *settings.Settings) *dto.Error {
 	switch s.Detail {
-	case settings.DetailFullStackTrace:
-		return dto.NewError(e.Inner, e.St.ToDTO(), s)
+	case settings.DetailStackTrace:
+		return dto.NewError(e.Inner, e.St.ToDTO(s), s)
 	case settings.DetailSimple:
 		fallthrough
 	default:
@@ -74,8 +75,10 @@ func (e *WithStack) ToDTO(_ *dto.StackTrace, s *settings.Settings) *dto.Error {
 	}
 }
 
-func (st *StackTrace) ToDTO() *dto.StackTrace {
+func (st *StackTrace) ToDTO(s *settings.Settings) *dto.StackTrace {
 	dtoStack := &dto.StackTrace{}
+
+funcloop:
 	for _, pc := range st.Stack0[:] {
 		if pc == 0 {
 			break
@@ -87,9 +90,16 @@ func (st *StackTrace) ToDTO() *dto.StackTrace {
 		}
 
 		file, line := fn.FileLine(pc)
+		name := fn.Name()
+
+		for _, prefix := range s.IgnoredFunctionPrefixes {
+			if strings.HasPrefix(name, prefix) {
+				continue funcloop
+			}
+		}
 
 		dtoStack.Functions = append(dtoStack.Functions, dto.Function{
-			Name: fn.Name(),
+			Name: name,
 			File: file,
 			Line: line,
 		})

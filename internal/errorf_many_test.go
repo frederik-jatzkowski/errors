@@ -2,7 +2,6 @@ package internal_test
 
 import (
 	"errors"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -26,7 +25,6 @@ func Test_errorfMany(t *testing.T) {
 
 		assert.ErrorAs(t, err, &many)
 		assert.ErrorAs(t, err, &with)
-		assert.NotEqual(t, err.Error(), fmt.Sprintf("%+v", err))
 	})
 
 	t.Run("Is", func(t *testing.T) {

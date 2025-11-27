@@ -42,21 +42,21 @@ fmt.Printf("%+v\n", err)
 // file not found
 //     main.main
 //         /path/to/main.go:8
-//     runtime.main
-//         runtime/proc.go:250
-//     runtime.goexit
-//         runtime/asm_arm64.s:1224
 ```
+
+Note that the default behavior of this package should already omit go internals from the stack trace.
 
 ## Formatting External Errors
 
 When mixing this package with other error handling libraries (e.g., during migration), you may want to preserve stack trace information from external errors. By default, the `%+v` verb is not forwarded to external errors to maintain consistent formatting.
 
-However, you can enable advanced formatting of external errors by calling `EnableAdvancedFormattingOfExternalErrors()` once in your `main` function:
+However, you can enable advanced formatting of external errors using `GlobalFormatSettings()` with `WithAdvancedFormattingOfExternalErrors()` once in your `main` function:
 
 ```go
 func main() {
-    errors.EnableAdvancedFormattingOfExternalErrors()
+    errors.GlobalFormatSettings(
+        errors.WithAdvancedFormattingOfExternalErrors(),
+    )
     // ... rest of your application
 }
 ```
@@ -74,7 +74,7 @@ This is particularly useful during gradual migration from other error handling l
 1. **`%v` and `%s`**: Show just the error message (human-readable)
 2. **`%+v`**: Shows error message plus stack trace (debug mode)
 3. **Never expose stack traces to users**: Always use `%v` or `err.Error()` for user-facing errors
-4. **External errors**: Use `EnableAdvancedFormattingOfExternalErrors()` if you need to preserve stack traces from other error libraries
+4. **External errors**: Use `GlobalFormatSettings(errors.WithAdvancedFormattingOfExternalErrors())` if you need to preserve stack traces from other error libraries
 
 ## What's Next?
 

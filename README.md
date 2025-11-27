@@ -17,8 +17,8 @@ A smart and idiomatic error handling library for the Go Programming Language add
 - Write idiomatic Go code.
 - Add stack traces whenever needed.
 - Statically enforced best practices.
-- Locality of behaviour and low cognitive load.
-- Easy conversion fom other error handling libraries:
+- Locality of behavior and low cognitive load.
+- Easy conversion from other error handling libraries:
   - [Standard Library](https://pkg.go.dev/errors)
   - [github.com/pkg/errors](https://github.com/pkg/errors)
 
@@ -43,26 +43,16 @@ call failed: processing id 123:
     => double errorf: 
         => something bad happened
             main.main
-                github.com/frederik-jatzkowski/errors/examples/nested/main.go:17
-            runtime/internal/atomic.(*Uint32).Load
-                runtime/internal/atomic/types.go:194
-            runtime.goexit
-                runtime/asm_arm64.s:1198, 
+                github.com/frederik-jatzkowski/errors/examples/nested/main.go:17, 
         => hi, abc
             main.main
                 github.com/frederik-jatzkowski/errors/examples/nested/main.go:20
-            runtime/internal/atomic.(*Uint32).Load
-                runtime/internal/atomic/types.go:194
-            runtime.goexit
-                runtime/asm_arm64.s:1198
     => something else happened
         main.main
             github.com/frederik-jatzkowski/errors/examples/nested/main.go:23
-        runtime/internal/atomic.(*Uint32).Load
-            runtime/internal/atomic/types.go:194
-        runtime.goexit
-                runtime/asm_arm64.s:1198
 ```
+Note that some internal function calls from the go runtime are already ignored by default.
+You can change this behavior by setting the ignore list using `errors.GlobalFormatSettings(errors.WithIgnoredFunctionPrefixes(...))`.
 
 ## Learn More
 
@@ -79,36 +69,49 @@ Want to dive deeper? Check out our comprehensive [Package Tour](./docs/tour/00-i
 ## Roadmap
 
 There are some additional features planned before reaching `v1`:
-- Forwarding of format verbs to nested errors. This allows for seamless step by step replacement.
-- Ignore certain function names in stack traces (eg. go runtime functions).
-- Performance optimizations.
-- Hardening for enterprise grade stability.
-- Defining a stripped prefix for function names.
+- [x] Forwarding of format verbs to nested errors. This allows for seamless step by step replacement.
+- [x] Ignore certain function names in stack traces (e.g., go runtime functions).
+- [ ] Defining a stripped prefix for function names.
+- [ ] Performance optimizations.
+- [ ] Hardening for enterprise grade stability.
 
 ## Settings
 
-### EnableAdvancedFormattingOfExternalErrors
+You can configure the package's formatting behavior using `GlobalFormatSettings()` with various format settings. This should only be called once in your `main` function as it has global effects.
 
-If you're mixing this package with other error handling libraries (e.g., during migration), you can enable advanced formatting of external errors by calling `EnableAdvancedFormattingOfExternalErrors()` once in your `main` function. This allows forwarding of the `%+v` verb to external errors, providing more stack trace information from other error handling libraries.
+### WithAdvancedFormattingOfExternalErrors
+
+If you're mixing this package with other error handling libraries (e.g., during migration), you can enable advanced formatting of external errors. This allows forwarding of the `%+v` verb to external errors, providing more stack trace information from other error handling libraries.
 
 Keep in mind that this adds valuable debugging information but might also lead to redundant stack traces. Additionally, the formatting of wrapped errors might not work as nicely with the formatting of this package.
 
 ```go
 func main() {
-    errors.EnableAdvancedFormattingOfExternalErrors()
+    errors.GlobalFormatSettings(
+        errors.WithAdvancedFormattingOfExternalErrors(),
+    )
+    // ... rest of your application
+}
+```
+
+### WithIgnoredFunctionPrefixes
+
+You can configure which function name prefixes should be ignored in stack traces. This is useful to keep Go internals out of your application logs. The default is already set to `[]string{"runtime", "internal/runtime", "testing"}`.
+
+```go
+func main() {
+    errors.GlobalFormatSettings(
+        errors.WithIgnoredFunctionPrefixes("runtime", "internal/runtime", "testing", "myapp/internal"),
+    )
     // ... rest of your application
 }
 ```
 
 ## Caveats
 
-- If you use other error libraries in the error tree,
-stack trace information deeper in the tree might not be formatted.
-Because of this, you should use linters to prevent the usage of other error handling libraries in your code.
-You can use `EnableAdvancedFormattingOfExternalErrors()` to improve formatting during gradual migration.
-- Many IDEs will warn you that using the `%w` verb is illegal in this libraries `errors.Errorf` function.
+- Many IDEs will warn you that using the `%w` verb is illegal in this library's `errors.Errorf` function.
 This is a false positive and the official `govet` will not complain about this.
-This packages `errors.Errorf` fully supports the `%w` verb.
+This package's `errors.Errorf` fully supports the `%w` verb.
 
 ## Acknowledgments
 
