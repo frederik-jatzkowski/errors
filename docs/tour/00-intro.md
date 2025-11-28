@@ -83,6 +83,7 @@ This tour is structured as a series of lessons, each building on the previous on
 7. **[Error Formatting](./07-error-formatting.md)**
    - All the formatting verbs and their behavior
    - Human-readable vs. machine-readable output
+   - Structured logging with slog
    - Custom formatting strategies
 
 8. **[Linter Integration](./08-linter-integration.md)**

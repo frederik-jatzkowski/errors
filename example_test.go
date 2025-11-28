@@ -62,10 +62,12 @@ func Example_includeStackTraces_minimal() {
 	fmt.Printf("%+v", err)
 }
 
-func Example_logger() {
+func Example_slog() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 	err := errors.New("test")
 
-	logger.Error("an error occurred", "error", err, "full", fmt.Sprintf("%+v", err))
+	// All errors from this package implement slog.LogValuer.
+	// They will format itself into an object shaped like {"short": "...", "long": "... with stacks"}.
+	logger.Error("an error occurred", "error", err)
 }
