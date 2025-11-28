@@ -17,7 +17,7 @@ and gives you the flexibility to format good errors for both humans and machines
 
 ### 🎯 Drop-In Replacement
 Every function in this package is a drop-in replacement for the standard library.
-Replace `errors.New` with `errors.New`, `fmt.Errorf` with `errors.Errorf`, and `errors.Join` with `errors.Join`.
+Replace standard library `errors.New` with this package's `errors.New`, `fmt.Errorf` with `errors.Errorf`, and `errors.Join` with `errors.Join`.
 Your code stays idiomatic and you get stack traces for free.
 We will also add future std library error handling APIs to this package with minimal delay.
 

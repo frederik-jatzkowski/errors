@@ -50,8 +50,8 @@ func main() {
 	fmt.Printf("%v\n", errors.Errorf("failed to process user: %w", err))
 	// Output:
 	// failed to process user: 
-	//   => failed to save user
-	//   => failed to send email
+	//     => failed to save user
+	//     => failed to send email
 }
 ```
 

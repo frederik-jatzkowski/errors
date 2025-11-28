@@ -16,7 +16,7 @@ var ErrInvalidInput = errors.New("invalid input")
 
 ## Defining Sentinel Errors
 
-You can define sentinel errors using `errors.New()`, `errors.Errorf()`:
+You can define sentinel errors using `errors.New()` or `errors.Errorf()`:
 
 ```go
 package mypackage

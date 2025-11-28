@@ -4,7 +4,7 @@ In this final lesson, we'll explore advanced topics including custom error types
 
 ## Custom Error Types
 
-This package works with custom error types as long as they are in the leafs of error trees.
+This package works with custom error types as long as they are in the leaves of error trees.
 You can define your own error types and use them with all the package's features.
 
 ### Defining Custom Error Types
@@ -53,8 +53,8 @@ if errors.As(wrapped, &valErr) {
 
 ### Caveat 1: Mixing With External Errors
 
-Using external errors is not a problem as long as they do not wrap errors of this library in them.
-If you wrap an error of this package with an external one, stack traces beyond will be ignored.
+Using external errors is fine as long as you don't wrap this package's errors with external error wrappers.
+If you wrap this package's errors with external error wrappers, stack traces may be lost.
 
 If you need to preserve stack trace information from external error libraries (e.g., during gradual migration), you can enable advanced formatting:
 

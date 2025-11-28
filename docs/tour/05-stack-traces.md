@@ -45,7 +45,7 @@ errExternal := fmt.Errorf("external error")
 joined := errors.Join(err, errExternal)
 ```
 
-This allows you to better comprehend where exactly external errors enter your codebase.
+This helps you identify where external errors enter your codebase.
 
 ### Rule 4: Duplicate Stack Traces Are Prevented
 

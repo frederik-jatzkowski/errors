@@ -26,7 +26,7 @@ func WithAdvancedFormattingOfExternalErrors() FormatSetting {
 }
 
 // WithIgnoredFunctionPrefixes is a [FormatSetting] that will prevent functions with names starting with the given prefix from showing up in stack traces.
-// This is useful to keep go internals out of your application logs.
+// This is useful to keep Go internals out of your application logs.
 //
 // The default for this package is already set to []string{"runtime", "internal/runtime", "testing"}.
 func WithIgnoredFunctionPrefixes(prefixes ...string) FormatSetting {

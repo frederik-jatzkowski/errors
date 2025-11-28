@@ -44,7 +44,7 @@ fmt.Printf("%+v\n", err)
 //         /path/to/main.go:8
 ```
 
-Note that the default behavior of this package should already omit go internals from the stack trace.
+Note that the default behavior of this package already omits Go internals from the stack trace.
 
 ## Formatting External Errors
 

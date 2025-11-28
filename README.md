@@ -55,7 +55,7 @@ call failed: processing id 123:
         main.main
             github.com/frederik-jatzkowski/errors/examples/nested/main.go:29
 ```
-Note that some internal function calls from the go runtime are already ignored by default (adjustable with `errors.WithIgnoredFunctionPrefixes(...)`).
+Note that some internal function calls from the Go runtime are already ignored by default (adjustable with `errors.WithIgnoredFunctionPrefixes(...)`).
 You probably want to clean up the stack trace even more by setting
 
 ```go
@@ -64,7 +64,7 @@ errors.GlobalFormatSettings(
     errors.WithStrippedFuncNamePrefix("github.com/frederik-jatzkowski/errors/"),
 )
 ```
-as a global format setting (adjusted to your project specifics).  This results in the following:
+as a global format setting (adjusted to your project specifics). This results in the following:
 
 ```
 call failed: processing id 123: 
@@ -173,7 +173,7 @@ This setting transforms function names like `github.com/frederik-jatzkowski/erro
 
 ## Caveats
 
-- Many IDEs will warn you that using the `%w` verb is illegal in this library's `errors.Errorf` function.
+- Many IDEs will warn you that using the `%w` verb is illegal in this package's `errors.Errorf` function.
 This is a false positive and the official `govet` will not complain about this.
 This package's `errors.Errorf` fully supports the `%w` verb.
 
