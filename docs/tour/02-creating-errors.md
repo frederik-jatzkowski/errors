@@ -57,12 +57,14 @@ This works like `fmt.Errorf()`, but again with automatic stack trace support. Mo
 
 ### Simple Formatting (No Wrapping)
 
-When you don't use `%w`, `errors.Errorf()` creates a simple formatted error:
+When you don't use `%w`, `errors.Errorf()` creates a simple formatted error with a stack trace (if needed):
 
 ```go
 err := errors.Errorf("user %d not found", 123)
 fmt.Printf("%v\n", err)  // Output: user 123 not found
 ```
+
+Even without wrapping, `errors.Errorf()` will add a stack trace unless the error is created in a sentinel context.
 
 ### With Error Wrapping
 
@@ -98,4 +100,3 @@ In the [next lesson](./03-wrapping-errors.md), we'll explore the `%w` verb, erro
 ---
 
 **Previous**: [Getting Started](./01-getting-started.md) | **Next**: [Wrapping Errors](./03-wrapping-errors.md)
-

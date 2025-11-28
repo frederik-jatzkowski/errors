@@ -18,6 +18,18 @@ if err != nil {
 }
 ```
 
+### Wrapping Multiple Errors
+
+You can also wrap multiple errors in a single call:
+
+```go
+err1 := errors.New("first error")
+err2 := errors.New("second error")
+wrapped := errors.Errorf("multiple failures: %w and %w", err1, err2)
+```
+
+This creates an error that contains both errors, and both can be checked with `errors.Is()`.
+
 ## Error Identity Preservation
 
 One of the key benefits of error wrapping is that it preserves error identity.
@@ -100,4 +112,5 @@ Now that you understand error wrapping, let's explore `errors.Join()` for combin
 ---
 
 **Previous**: [Creating Errors](./02-creating-errors.md) | **Next**: [Joining Multiple Errors](./04-joining-errors.md)
+
 

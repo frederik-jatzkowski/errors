@@ -10,10 +10,10 @@ import (
 func (e *ErrorfMany) Format(s fmt.State, verb rune) {
 	switch {
 	case shouldPrintStack(s, verb):
-		_ = e.ToDTO(nil, settings.Defaults.CloneWithDetail(settings.DetailStackTrace)).
+		_ = e.ToDTO(nil, settings.Defaults.CloneWithStackTrace()).
 			Write(dto.NewWriter(s, 0))
 	case shouldPrintErrorMessage(s, verb):
-		_ = e.ToDTO(nil, settings.Defaults.CloneWithDetail(settings.DetailSimple)).
+		_ = e.ToDTO(nil, &settings.Defaults).
 			Write(dto.NewWriter(s, 0))
 	default:
 		// nolint: errcheck
@@ -24,10 +24,10 @@ func (e *ErrorfMany) Format(s fmt.State, verb rune) {
 func (e *ErrorfSingle) Format(s fmt.State, verb rune) {
 	switch {
 	case shouldPrintStack(s, verb):
-		_ = e.ToDTO(nil, settings.Defaults.CloneWithDetail(settings.DetailStackTrace)).
+		_ = e.ToDTO(nil, settings.Defaults.CloneWithStackTrace()).
 			Write(dto.NewWriter(s, 0))
 	case shouldPrintErrorMessage(s, verb):
-		_ = e.ToDTO(nil, settings.Defaults.CloneWithDetail(settings.DetailSimple)).
+		_ = e.ToDTO(nil, &settings.Defaults).
 			Write(dto.NewWriter(s, 0))
 	default:
 		// nolint: errcheck
@@ -37,20 +37,20 @@ func (e *ErrorfSingle) Format(s fmt.State, verb rune) {
 
 func (err *Join) Format(s fmt.State, verb rune) {
 	if shouldPrintStack(s, verb) {
-		_ = err.ToDTO(nil, settings.Defaults.CloneWithDetail(settings.DetailStackTrace)).
+		_ = err.ToDTO(nil, settings.Defaults.CloneWithStackTrace()).
 			Write(dto.NewWriter(s, -1))
 	} else {
-		_ = err.ToDTO(nil, settings.Defaults.CloneWithDetail(settings.DetailSimple)).Write(dto.NewWriter(s, -1))
+		_ = err.ToDTO(nil, &settings.Defaults).Write(dto.NewWriter(s, -1))
 	}
 }
 
 func (e *WithStack) Format(s fmt.State, verb rune) {
 	switch {
 	case shouldPrintStack(s, verb):
-		_ = e.ToDTO(nil, settings.Defaults.CloneWithDetail(settings.DetailStackTrace)).
+		_ = e.ToDTO(nil, settings.Defaults.CloneWithStackTrace()).
 			Write(dto.NewWriter(s, 0))
 	case shouldPrintErrorMessage(s, verb):
-		_ = e.ToDTO(nil, settings.Defaults.CloneWithDetail(settings.DetailSimple)).
+		_ = e.ToDTO(nil, &settings.Defaults).
 			Write(dto.NewWriter(s, 0))
 	default:
 		// nolint: errcheck

@@ -42,17 +42,50 @@ or
 call failed: processing id 123: 
     => double errorf: 
         => something bad happened
+            github.com/frederik-jatzkowski/errors/examples/nested/subpackage.SomethingBad
+                github.com/frederik-jatzkowski/errors/examples/nested/subpackage/errors.go:6
             main.main
-                github.com/frederik-jatzkowski/errors/examples/nested/main.go:17, 
+                github.com/frederik-jatzkowski/errors/examples/nested/main.go:23, 
         => hi, abc
             main.main
-                github.com/frederik-jatzkowski/errors/examples/nested/main.go:20
+                github.com/frederik-jatzkowski/errors/examples/nested/main.go:26
     => something else happened
+        github.com/frederik-jatzkowski/errors/examples/nested/subpackage.SomethingElse
+            github.com/frederik-jatzkowski/errors/examples/nested/subpackage/errors.go:10
         main.main
-            github.com/frederik-jatzkowski/errors/examples/nested/main.go:23
+            github.com/frederik-jatzkowski/errors/examples/nested/main.go:29
 ```
-Note that some internal function calls from the go runtime are already ignored by default.
-You can change this behavior by setting the ignore list using `errors.GlobalFormatSettings(errors.WithIgnoredFunctionPrefixes(...))`.
+Note that some internal function calls from the Go runtime are already ignored by default (adjustable with `errors.WithIgnoredFunctionPrefixes(...)`).
+You probably want to clean up the stack trace even more by setting
+
+```go
+errors.GlobalFormatSettings(
+    errors.WithStrippedFileNamePrefix("github.com/frederik-jatzkowski/errors/"),
+    errors.WithStrippedFuncNamePrefix("github.com/frederik-jatzkowski/errors/"),
+)
+```
+as a global format setting (adjusted to your project specifics). This results in the following:
+
+```
+call failed: processing id 123: 
+    => double errorf: 
+        => something bad happened
+            examples/nested/subpackage.SomethingBad
+                examples/nested/subpackage/errors.go:6
+            main.main
+                examples/nested/main.go:23, 
+        => hi, abc
+            main.main
+                examples/nested/main.go:26
+    => something else happened
+        examples/nested/subpackage.SomethingElse
+            examples/nested/subpackage/errors.go:10
+        main.main
+            examples/nested/main.go:29
+```
+
+This message contains all information necessary for debugging the different origins and paths
+of the error tree while being minimally clean and straightforward.
 
 ## Learn More
 
@@ -71,7 +104,7 @@ Want to dive deeper? Check out our comprehensive [Package Tour](./docs/tour/00-i
 There are some additional features planned before reaching `v1`:
 - [x] Forwarding of format verbs to nested errors. This allows for seamless step by step replacement.
 - [x] Ignore certain function names in stack traces (e.g., go runtime functions).
-- [ ] Defining a stripped prefix for function names.
+- [x] Defining a stripped prefix for function names.
 - [ ] Performance optimizations.
 - [ ] Hardening for enterprise grade stability.
 
@@ -107,9 +140,40 @@ func main() {
 }
 ```
 
+### WithStrippedFileNamePrefix
+
+You can configure a prefix that will be stripped from file names in stack traces. This is useful to keep stack traces clean and focused, showing only the necessary information. The default is `""` (no stripping).
+
+```go
+func main() {
+    errors.GlobalFormatSettings(
+        errors.WithStrippedFileNamePrefix("github.com/frederik-jatzkowski/errors/"),
+    )
+    // ... rest of your application
+}
+```
+
+This setting transforms file paths like `github.com/frederik-jatzkowski/errors/examples/nested/main.go:21` into `examples/nested/main.go:21`, making stack traces more concise while preserving all essential debugging information.
+
+### WithStrippedFuncNamePrefix
+
+You can configure a prefix that will be stripped from function names in stack traces. This works together with `WithStrippedFileNamePrefix` to create cleaner, more concise stack traces. The default is `""` (no stripping).
+
+```go
+func main() {
+    errors.GlobalFormatSettings(
+        errors.WithStrippedFileNamePrefix("github.com/frederik-jatzkowski/errors/"),
+        errors.WithStrippedFuncNamePrefix("github.com/frederik-jatzkowski/errors/"),
+    )
+    // ... rest of your application
+}
+```
+
+This setting transforms function names like `github.com/frederik-jatzkowski/errors/examples/nested/subpackage.SomethingBad` into `examples/nested/subpackage.SomethingBad`, complementing the file name prefix stripping for even cleaner stack traces.
+
 ## Caveats
 
-- Many IDEs will warn you that using the `%w` verb is illegal in this library's `errors.Errorf` function.
+- Many IDEs will warn you that using the `%w` verb is illegal in this package's `errors.Errorf` function.
 This is a false positive and the official `govet` will not complain about this.
 This package's `errors.Errorf` fully supports the `%w` verb.
 

@@ -50,8 +50,8 @@ func main() {
 	fmt.Printf("%v\n", errors.Errorf("failed to process user: %w", err))
 	// Output:
 	// failed to process user: 
-	//   => failed to save user
-	//   => failed to send email
+	//     => failed to save user
+	//     => failed to send email
 }
 ```
 
@@ -121,4 +121,3 @@ Now that you understand how to create, wrap, and join errors, let's dive deep in
 ---
 
 **Previous**: [Wrapping Errors](./03-wrapping-errors.md) | **Next**: [Stack Traces Deep Dive](./05-stack-traces.md)
-

@@ -65,14 +65,11 @@ func (err *Simple) ToDTO(stack *dto.StackTrace, s *settings.Settings) *dto.Error
 }
 
 func (e *WithStack) ToDTO(_ *dto.StackTrace, s *settings.Settings) *dto.Error {
-	switch s.Detail {
-	case settings.DetailStackTrace:
+	if s.ShowStackTrace {
 		return dto.NewError(e.Inner, e.St.ToDTO(s), s)
-	case settings.DetailSimple:
-		fallthrough
-	default:
-		return dto.NewError(e.Inner, nil, s)
 	}
+
+	return dto.NewError(e.Inner, nil, s)
 }
 
 func (st *StackTrace) ToDTO(s *settings.Settings) *dto.StackTrace {
@@ -89,7 +86,6 @@ funcloop:
 			continue
 		}
 
-		file, line := fn.FileLine(pc)
 		name := fn.Name()
 
 		for _, prefix := range s.IgnoredFunctionPrefixes {
@@ -97,6 +93,11 @@ funcloop:
 				continue funcloop
 			}
 		}
+
+		name, _ = strings.CutPrefix(name, s.StrippedFuncNamePrefix)
+
+		file, line := fn.FileLine(pc)
+		file, _ = strings.CutPrefix(file, s.StrippedFileNamePrefix)
 
 		dtoStack.Functions = append(dtoStack.Functions, dto.Function{
 			Name: name,

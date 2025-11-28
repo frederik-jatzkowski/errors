@@ -36,7 +36,11 @@ func Example_onlyHumanReadable() {
 	//     => something else happened
 }
 
-func Example_includeStackTraces() {
+func Example_includeStackTraces_minimal() {
+	errors.GlobalFormatSettings(
+		errors.WithStrippedFileNamePrefix("github.com/frederik-jatzkowski/errors/"),
+	)
+
 	err := errors.Errorf(
 		"call failed: %w",
 		errors.Errorf(

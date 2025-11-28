@@ -16,7 +16,7 @@ var ErrInvalidInput = errors.New("invalid input")
 
 ## Defining Sentinel Errors
 
-You can define sentinel errors using `errors.New()`, `errors.Errorf()`:
+You can define sentinel errors using `errors.New()` or `errors.Errorf()`:
 
 ```go
 package mypackage
@@ -148,4 +148,5 @@ Now that you understand sentinel errors, let's explore all the formatting option
 ---
 
 **Previous**: [Stack Traces Deep Dive](./05-stack-traces.md) | **Next**: [Error Formatting](./07-error-formatting.md)
+
 

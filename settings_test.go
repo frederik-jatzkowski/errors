@@ -7,11 +7,14 @@ import (
 )
 
 func ExampleGlobalFormatSettings() {
+	// set formatting options globally
 	errors.GlobalFormatSettings(
 		errors.WithAdvancedFormattingOfExternalErrors(),
+		errors.WithStrippedFileNamePrefix("github.com/frederik-jatzkowski/errors/"),
+		errors.WithStrippedFuncNamePrefix("github.com/frederik-jatzkowski/errors/"),
 	)
 
-	fmt.Println(errors.New("something happened"))
+	fmt.Printf("%s", errors.New("something happened"))
 	// Output:
 	// something happened
 }

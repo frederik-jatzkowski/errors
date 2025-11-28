@@ -8,30 +8,30 @@ import (
 
 func (e *ErrorfMany) MarshalJSON() ([]byte, error) {
 	return json.Marshal(
-		e.ToDTO(nil, settings.Defaults.CloneWithDetail(settings.DetailStackTrace)),
+		e.ToDTO(nil, settings.Defaults.CloneWithStackTrace()),
 	)
 }
 
 func (e *ErrorfSingle) MarshalJSON() ([]byte, error) {
 	return json.Marshal(
-		e.ToDTO(nil, settings.Defaults.CloneWithDetail(settings.DetailStackTrace)),
+		e.ToDTO(nil, settings.Defaults.CloneWithStackTrace()),
 	)
 }
 
 func (err *Join) MarshalJSON() ([]byte, error) {
 	return json.Marshal(
-		err.ToDTO(nil, settings.Defaults.CloneWithDetail(settings.DetailStackTrace)),
+		err.ToDTO(nil, settings.Defaults.CloneWithStackTrace()),
 	)
 }
 
 func (err *Simple) MarshalJSON() ([]byte, error) {
 	return json.Marshal(
-		err.ToDTO(nil, settings.Defaults.CloneWithDetail(settings.DetailStackTrace)),
+		err.ToDTO(nil, settings.Defaults.CloneWithStackTrace()),
 	)
 }
 
 func (e *WithStack) MarshalJSON() ([]byte, error) {
 	return json.Marshal(
-		e.ToDTO(nil, settings.Defaults.CloneWithDetail(settings.DetailStackTrace)),
+		e.ToDTO(nil, settings.Defaults.CloneWithStackTrace()),
 	)
 }

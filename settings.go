@@ -26,11 +26,31 @@ func WithAdvancedFormattingOfExternalErrors() FormatSetting {
 }
 
 // WithIgnoredFunctionPrefixes is a [FormatSetting] that will prevent functions with names starting with the given prefix from showing up in stack traces.
-// This is useful to keep go internals out of your application logs.
+// This is useful to keep Go internals out of your application logs.
 //
 // The default for this package is already set to []string{"runtime", "internal/runtime", "testing"}.
 func WithIgnoredFunctionPrefixes(prefixes ...string) FormatSetting {
 	return func(settings *settings.Settings) {
 		settings.IgnoredFunctionPrefixes = prefixes
+	}
+}
+
+// WithStrippedFileNamePrefix is a [FormatSetting] that sets a prefix which will be stripped from file names in stack traces.
+// This is useful to keep stack traces as clean as possible, showing only necessary information.
+//
+// The default for this package is "" (no stripping).
+func WithStrippedFileNamePrefix(prefix string) FormatSetting {
+	return func(settings *settings.Settings) {
+		settings.StrippedFileNamePrefix = prefix
+	}
+}
+
+// WithStrippedFuncNamePrefix is a [FormatSetting] that sets a prefix which will be stripped from function names in stack traces.
+// This is useful to keep stack traces as clean as possible, showing only necessary information.
+//
+// The default for this package is "" (no stripping).
+func WithStrippedFuncNamePrefix(prefix string) FormatSetting {
+	return func(settings *settings.Settings) {
+		settings.StrippedFuncNamePrefix = prefix
 	}
 }

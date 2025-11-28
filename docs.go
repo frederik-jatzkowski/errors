@@ -15,13 +15,16 @@
 // Stack traces are automatically added to errors created by this package unless
 // the error already has a stack trace or
 // the error is created in a sentinel context (like package initialization).
-// Stack traces can be formatted using the %+v verb with fmt package.
+// Stack traces can be formatted using the %+v verb with [fmt] package.
 //
 // Error Formatting:
 //
-// Errors support enhanced formatting through the fmt package:
+// Errors support enhanced formatting through the [fmt] package:
 //   - %s, %v: Error message
 //   - %+v: Error message with full stack traces
+//
+// Formatting can be customized using [GlobalFormatSettings] to control
+// how stack traces are displayed (e.g., stripping prefixes, ignoring function names).
 //
 // Compatibility:
 //

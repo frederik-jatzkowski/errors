@@ -44,7 +44,7 @@ fmt.Printf("%+v\n", err)
 //         /path/to/main.go:8
 ```
 
-Note that the default behavior of this package should already omit go internals from the stack trace.
+Note that the default behavior of this package already omits Go internals from the stack trace.
 
 ## Formatting External Errors
 
@@ -68,6 +68,76 @@ This setting allows forwarding of the `%+v` verb to external errors, which can p
 - **Formatting inconsistencies**: The formatting of external errors might not align perfectly with this package's formatting style
 
 This is particularly useful during gradual migration from other error handling libraries, as it helps preserve debugging information while you transition.
+
+## Customizing Stack Trace Display
+
+You can further customize how stack traces are displayed using additional format settings.
+
+### Stripping File Name Prefixes
+
+To make stack traces more concise, you can strip common prefixes from file paths. This is especially useful when your code is in a module with a long import path:
+
+```go
+func main() {
+    errors.GlobalFormatSettings(
+        errors.WithStrippedFileNamePrefix("github.com/frederik-jatzkowski/errors/"),
+    )
+    // ... rest of your application
+}
+```
+
+With this setting, file paths like:
+```
+github.com/frederik-jatzkowski/errors/examples/nested/main.go:21
+```
+
+Will be displayed as:
+```
+examples/nested/main.go:21
+```
+
+This keeps stack traces clean and readable while preserving all essential debugging information.
+
+### Stripping Function Name Prefixes
+
+Similarly, you can strip common prefixes from function names in stack traces. This works together with `WithStrippedFileNamePrefix` to create cleaner, more concise stack traces:
+
+```go
+func main() {
+    errors.GlobalFormatSettings(
+        errors.WithStrippedFileNamePrefix("github.com/frederik-jatzkowski/errors/"),
+        errors.WithStrippedFuncNamePrefix("github.com/frederik-jatzkowski/errors/"),
+    )
+    // ... rest of your application
+}
+```
+
+With this setting, function names like:
+```
+github.com/frederik-jatzkowski/errors/examples/nested/subpackage.SomethingBad
+```
+
+Will be displayed as:
+```
+examples/nested/subpackage.SomethingBad
+```
+
+This complements the file name prefix stripping to create even cleaner stack traces.
+
+### Ignoring Function Prefixes
+
+You can also configure which function name prefixes should be ignored in stack traces. This is useful to keep Go internals out of your application logs:
+
+```go
+func main() {
+    errors.GlobalFormatSettings(
+        errors.WithIgnoredFunctionPrefixes("runtime", "internal/runtime", "testing", "myapp/internal"),
+    )
+    // ... rest of your application
+}
+```
+
+The default already ignores `[]string{"runtime", "internal/runtime", "testing"}`, so you typically only need to add your own internal prefixes if desired.
 
 ## Key Takeaways
 
