@@ -42,47 +42,50 @@ or
 call failed: processing id 123: 
     => double errorf: 
         => something bad happened
+            github.com/frederik-jatzkowski/errors/examples/nested/subpackage.SomethingBad
+                github.com/frederik-jatzkowski/errors/examples/nested/subpackage/errors.go:6
             main.main
-                github.com/frederik-jatzkowski/errors/examples/nested/main.go:22, 
+                github.com/frederik-jatzkowski/errors/examples/nested/main.go:23, 
         => hi, abc
             main.main
-                github.com/frederik-jatzkowski/errors/examples/nested/main.go:25
+                github.com/frederik-jatzkowski/errors/examples/nested/main.go:26
     => something else happened
         github.com/frederik-jatzkowski/errors/examples/nested/subpackage.SomethingElse
-            github.com/frederik-jatzkowski/errors/examples/nested/subpackage/something.go:6
+            github.com/frederik-jatzkowski/errors/examples/nested/subpackage/errors.go:10
         main.main
-            github.com/frederik-jatzkowski/errors/examples/nested/main.go:28
+            github.com/frederik-jatzkowski/errors/examples/nested/main.go:29
 ```
-Note that some internal function calls from the go runtime are already ignored by default.
-You can change this behavior by setting the ignore list using `errors.GlobalFormatSettings(errors.WithIgnoredFunctionPrefixes(...))`.
-
-You can clean up the stack trace even more by setting
+Note that some internal function calls from the go runtime are already ignored by default (adjustable with `errors.WithIgnoredFunctionPrefixes(...)`).
+You probably want to clean up the stack trace even more by setting
 
 ```go
 errors.GlobalFormatSettings(
     errors.WithStrippedFileNamePrefix("github.com/frederik-jatzkowski/errors/"),
+    errors.WithStrippedFuncNamePrefix("github.com/frederik-jatzkowski/errors/"),
 )
 ```
-as a global format setting.  This results in the following:
+as a global format setting (adjusted to your project specifics).  This results in the following:
 
 ```
 call failed: processing id 123: 
     => double errorf: 
         => something bad happened
+            examples/nested/subpackage.SomethingBad
+                examples/nested/subpackage/errors.go:6
             main.main
-                examples/nested/main.go:22, 
+                examples/nested/main.go:23, 
         => hi, abc
             main.main
-                examples/nested/main.go:25
+                examples/nested/main.go:26
     => something else happened
-        github.com/frederik-jatzkowski/errors/examples/nested/subpackage.SomethingElse
-            examples/nested/subpackage/something.go:6
+        examples/nested/subpackage.SomethingElse
+            examples/nested/subpackage/errors.go:10
         main.main
-            examples/nested/main.go:28
+            examples/nested/main.go:29
 ```
 
 This message contains all information necessary for debugging the different origins and paths
-of the root errors while being minimally clean and straightforward.
+of the error tree while being minimally clean and straightforward.
 
 ## Learn More
 
@@ -151,6 +154,22 @@ func main() {
 ```
 
 This setting transforms file paths like `github.com/frederik-jatzkowski/errors/examples/nested/main.go:21` into `examples/nested/main.go:21`, making stack traces more concise while preserving all essential debugging information.
+
+### WithStrippedFuncNamePrefix
+
+You can configure a prefix that will be stripped from function names in stack traces. This works together with `WithStrippedFileNamePrefix` to create cleaner, more concise stack traces. The default is `""` (no stripping).
+
+```go
+func main() {
+    errors.GlobalFormatSettings(
+        errors.WithStrippedFileNamePrefix("github.com/frederik-jatzkowski/errors/"),
+        errors.WithStrippedFuncNamePrefix("github.com/frederik-jatzkowski/errors/"),
+    )
+    // ... rest of your application
+}
+```
+
+This setting transforms function names like `github.com/frederik-jatzkowski/errors/examples/nested/subpackage.SomethingBad` into `examples/nested/subpackage.SomethingBad`, complementing the file name prefix stripping for even cleaner stack traces.
 
 ## Caveats
 

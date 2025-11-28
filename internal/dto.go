@@ -85,6 +85,7 @@ funcloop:
 		if fn == nil {
 			continue
 		}
+
 		name := fn.Name()
 
 		for _, prefix := range s.IgnoredFunctionPrefixes {
@@ -93,8 +94,9 @@ funcloop:
 			}
 		}
 
-		file, line := fn.FileLine(pc)
+		name, _ = strings.CutPrefix(name, s.StrippedFuncNamePrefix)
 
+		file, line := fn.FileLine(pc)
 		file, _ = strings.CutPrefix(file, s.StrippedFileNamePrefix)
 
 		dtoStack.Functions = append(dtoStack.Functions, dto.Function{

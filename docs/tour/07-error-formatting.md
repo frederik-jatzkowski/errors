@@ -98,6 +98,32 @@ examples/nested/main.go:21
 
 This keeps stack traces clean and readable while preserving all essential debugging information.
 
+### Stripping Function Name Prefixes
+
+Similarly, you can strip common prefixes from function names in stack traces. This works together with `WithStrippedFileNamePrefix` to create cleaner, more concise stack traces:
+
+```go
+func main() {
+    errors.GlobalFormatSettings(
+        errors.WithStrippedFileNamePrefix("github.com/frederik-jatzkowski/errors/"),
+        errors.WithStrippedFuncNamePrefix("github.com/frederik-jatzkowski/errors/"),
+    )
+    // ... rest of your application
+}
+```
+
+With this setting, function names like:
+```
+github.com/frederik-jatzkowski/errors/examples/nested/subpackage.SomethingBad
+```
+
+Will be displayed as:
+```
+examples/nested/subpackage.SomethingBad
+```
+
+This complements the file name prefix stripping to create even cleaner stack traces.
+
 ### Ignoring Function Prefixes
 
 You can also configure which function name prefixes should be ignored in stack traces. This is useful to keep Go internals out of your application logs:

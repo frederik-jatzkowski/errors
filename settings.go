@@ -44,3 +44,13 @@ func WithStrippedFileNamePrefix(prefix string) FormatSetting {
 		settings.StrippedFileNamePrefix = prefix
 	}
 }
+
+// WithStrippedFuncNamePrefix is a [FormatSetting] that sets a prefix which will be stripped from function names in stack traces.
+// This is useful to keep stack traces as clean as possible, showing only necessary information.
+//
+// The default for this package is "" (no stripping).
+func WithStrippedFuncNamePrefix(prefix string) FormatSetting {
+	return func(settings *settings.Settings) {
+		settings.StrippedFuncNamePrefix = prefix
+	}
+}

@@ -7,12 +7,14 @@ var Defaults = Settings{
 	ShouldForwardVerbs:      false,
 	IgnoredFunctionPrefixes: []string{"runtime", "internal/runtime", "testing"},
 	StrippedFileNamePrefix:  "",
+	StrippedFuncNamePrefix:  "",
 }
 
 // Settings represents the available settings for error formatting
 type Settings struct {
-	IgnoredFunctionPrefixes []string
 	StrippedFileNamePrefix  string
+	StrippedFuncNamePrefix  string
+	IgnoredFunctionPrefixes []string
 	ShowStackTrace          bool
 	ShouldForwardVerbs      bool
 }
