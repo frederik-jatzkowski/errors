@@ -43,16 +43,46 @@ call failed: processing id 123:
     => double errorf: 
         => something bad happened
             main.main
-                github.com/frederik-jatzkowski/errors/examples/nested/main.go:17, 
+                github.com/frederik-jatzkowski/errors/examples/nested/main.go:22, 
         => hi, abc
             main.main
-                github.com/frederik-jatzkowski/errors/examples/nested/main.go:20
+                github.com/frederik-jatzkowski/errors/examples/nested/main.go:25
     => something else happened
+        github.com/frederik-jatzkowski/errors/examples/nested/subpackage.SomethingElse
+            github.com/frederik-jatzkowski/errors/examples/nested/subpackage/something.go:6
         main.main
-            github.com/frederik-jatzkowski/errors/examples/nested/main.go:23
+            github.com/frederik-jatzkowski/errors/examples/nested/main.go:28
 ```
 Note that some internal function calls from the go runtime are already ignored by default.
 You can change this behavior by setting the ignore list using `errors.GlobalFormatSettings(errors.WithIgnoredFunctionPrefixes(...))`.
+
+You can clean up the stack trace even more by setting
+
+```go
+errors.GlobalFormatSettings(
+    errors.WithStrippedFileNamePrefix("github.com/frederik-jatzkowski/errors/"),
+)
+```
+as a global format setting.  This results in the following:
+
+```
+call failed: processing id 123: 
+    => double errorf: 
+        => something bad happened
+            main.main
+                examples/nested/main.go:22, 
+        => hi, abc
+            main.main
+                examples/nested/main.go:25
+    => something else happened
+        github.com/frederik-jatzkowski/errors/examples/nested/subpackage.SomethingElse
+            examples/nested/subpackage/something.go:6
+        main.main
+            examples/nested/main.go:28
+```
+
+This message contains all information necessary for debugging the different origins and paths
+of the root errors while being minimally clean and straightforward.
 
 ## Learn More
 
@@ -71,7 +101,7 @@ Want to dive deeper? Check out our comprehensive [Package Tour](./docs/tour/00-i
 There are some additional features planned before reaching `v1`:
 - [x] Forwarding of format verbs to nested errors. This allows for seamless step by step replacement.
 - [x] Ignore certain function names in stack traces (e.g., go runtime functions).
-- [ ] Defining a stripped prefix for function names.
+- [x] Defining a stripped prefix for function names.
 - [ ] Performance optimizations.
 - [ ] Hardening for enterprise grade stability.
 
@@ -106,6 +136,21 @@ func main() {
     // ... rest of your application
 }
 ```
+
+### WithStrippedFileNamePrefix
+
+You can configure a prefix that will be stripped from file names in stack traces. This is useful to keep stack traces clean and focused, showing only the necessary information. The default is `""` (no stripping).
+
+```go
+func main() {
+    errors.GlobalFormatSettings(
+        errors.WithStrippedFileNamePrefix("github.com/frederik-jatzkowski/errors/"),
+    )
+    // ... rest of your application
+}
+```
+
+This setting transforms file paths like `github.com/frederik-jatzkowski/errors/examples/nested/main.go:21` into `examples/nested/main.go:21`, making stack traces more concise while preserving all essential debugging information.
 
 ## Caveats
 

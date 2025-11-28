@@ -34,3 +34,13 @@ func WithIgnoredFunctionPrefixes(prefixes ...string) FormatSetting {
 		settings.IgnoredFunctionPrefixes = prefixes
 	}
 }
+
+// WithStrippedFileNamePrefix is a [FormatSetting] that sets a prefix which will be stripped from file names in stack traces.
+// This is useful to keep stack traces as clean as possible, showing only necessary information.
+//
+// The default for this package is "" (no stripping).
+func WithStrippedFileNamePrefix(prefix string) FormatSetting {
+	return func(settings *settings.Settings) {
+		settings.StrippedFileNamePrefix = prefix
+	}
+}

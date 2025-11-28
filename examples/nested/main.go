@@ -4,9 +4,14 @@ import (
 	"fmt"
 
 	"github.com/frederik-jatzkowski/errors"
+	"github.com/frederik-jatzkowski/errors/examples/nested/subpackage"
 )
 
 func main() {
+	errors.GlobalFormatSettings(
+		errors.WithStrippedFileNamePrefix("github.com/frederik-jatzkowski/errors/"),
+	)
+
 	err := errors.Errorf(
 		"call failed: %w",
 		errors.Errorf(
@@ -20,7 +25,7 @@ func main() {
 						errors.Errorf("abc"),
 					),
 				),
-				errors.New("something else happened"),
+				subpackage.SomethingElse(),
 			),
 		),
 	)

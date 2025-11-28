@@ -98,4 +98,3 @@ In the [next lesson](./03-wrapping-errors.md), we'll explore the `%w` verb, erro
 ---
 
 **Previous**: [Getting Started](./01-getting-started.md) | **Next**: [Wrapping Errors](./03-wrapping-errors.md)
-

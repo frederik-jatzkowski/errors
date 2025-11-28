@@ -101,3 +101,4 @@ Now that you understand error wrapping, let's explore `errors.Join()` for combin
 
 **Previous**: [Creating Errors](./02-creating-errors.md) | **Next**: [Joining Multiple Errors](./04-joining-errors.md)
 
+

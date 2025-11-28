@@ -9,9 +9,10 @@ import (
 func ExampleGlobalFormatSettings() {
 	errors.GlobalFormatSettings(
 		errors.WithAdvancedFormattingOfExternalErrors(),
+		errors.WithStrippedFileNamePrefix("github.com/frederik-jatzkowski/errors/"),
 	)
 
-	fmt.Println(errors.New("something happened"))
+	fmt.Printf("%+v", errors.New("something happened"))
 	// Output:
 	// something happened
 }
