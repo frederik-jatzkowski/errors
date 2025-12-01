@@ -87,6 +87,30 @@ call failed: processing id 123:
 This message contains all information necessary for debugging the different origins and paths
 of the error tree while being minimally clean and straightforward.
 
+## Integration with logging libraries
+
+All errors from this package implement `slog.LogValuer`, making them seamlessly compatible with Go's structured logging. When used with `slog`, errors are automatically formatted into a structured object with both short (human-readable) and long (with stack traces) formats:
+
+```go
+logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+err := errors.New("test")
+logger.Error("an error occurred", "error", err)
+```
+
+This will output JSON like:
+```json
+{
+  "level": "ERROR",
+  "msg": "an error occurred",
+  "error": {
+    "short": "test",
+    "long": "test\n    main.main\n        /path/to/main.go:8"
+  }
+}
+```
+
+This allows you to have both concise error messages and full stack traces available in your structured logs, making debugging easier while keeping logs clean.
+
 ## Learn More
 
 Want to dive deeper? Check out our comprehensive [Package Tour](./docs/tour/00-intro.md) that covers:

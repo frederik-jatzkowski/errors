@@ -139,12 +139,40 @@ func main() {
 
 The default already ignores `[]string{"runtime", "internal/runtime", "testing"}`, so you typically only need to add your own internal prefixes if desired.
 
+## Structured Logging with slog
+
+All errors from this package implement `slog.LogValuer`, making them seamlessly compatible with Go's structured logging. When passed to a slog logger, errors are automatically formatted as a group value with two fields:
+
+- **`short`**: The human-readable error message (equivalent to `%v`)
+- **`long`**: The full error message with stack traces (equivalent to `%+v`)
+
+```go
+logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+err := errors.New("test")
+logger.Error("an error occurred", "error", err)
+```
+
+This produces JSON output like:
+```json
+{
+  "level": "ERROR",
+  "msg": "an error occurred",
+  "error": {
+    "short": "test",
+    "long": "test\n    main.main\n        /path/to/main.go:8"
+  }
+}
+```
+
+This dual-format approach provides both concise error messages for quick scanning and full stack traces when needed, all without any code changes.
+
 ## Key Takeaways
 
 1. **`%v` and `%s`**: Show just the error message (human-readable)
 2. **`%+v`**: Shows error message plus stack trace (debug mode)
 3. **Never expose stack traces to users**: Always use `%v` or `err.Error()` for user-facing errors
-4. **External errors**: Use `GlobalFormatSettings(errors.WithAdvancedFormattingOfExternalErrors())` if you need to preserve stack traces from other error libraries
+4. **slog integration**: All errors implement `slog.LogValuer`, providing both `short` and `long` formats automatically
+5. **External errors**: Use `GlobalFormatSettings(errors.WithAdvancedFormattingOfExternalErrors())` if you need to preserve stack traces from other error libraries
 
 ## What's Next?
 
