@@ -60,6 +60,35 @@ err3 := errors.Errorf("wrapped again: %w", err2)  // Still no new stack trace
 This keeps stack traces clean and focused on the original error location.
 The users of this library should feel no hesitation when wrapping errors with meaningful messages.
 
+### Rule 5: Explicit Stack Traces with `WithStack`
+
+While the package normally prevents duplicate stack traces, there are cases where you may want to explicitly add a stack trace even if the error already has one. The `WithStack` function allows you to do exactly that.
+
+The most common use case is when handling errors that originated in other goroutines. When errors are passed between goroutines (e.g., via channels), the stack trace captured at the error's origin point reflects the goroutine where it was created. However, you may also want to capture a stack trace at the point where you receive and handle the error in a different goroutine, as this provides valuable debugging information about the error's propagation path.
+
+```go
+func main() {
+	err := <-FromGoroutine()
+	
+	// Without WithStack: Only shows stack trace from the goroutine where error was created
+	wrapped := errors.Errorf("received error: %w", err)
+	
+	// With WithStack: Adds stack trace from current goroutine (where error is handled)
+	wrapped := errors.Errorf("received error: %w", errors.WithStack(err))
+}
+```
+
+This allows you to track both where the error originated and where it was observed or handled, making debugging concurrent code much easier.
+
+**When to use `WithStack`:**
+- Receiving errors from channels
+- Handling errors from goroutines
+- You want to track where an error was observed or handled, not just where it originated
+
+**When NOT to use `WithStack`:**
+- In normal error wrapping scenarios (the package handles this automatically)
+- When you want to follow the default duplicate prevention behavior
+
 ## Sentinel Detection
 
 The package detects sentinel errors by checking if the stack trace was captured during package initialization (`.init` function). This is why sentinel errors don't get stack traces.

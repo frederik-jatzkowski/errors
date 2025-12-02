@@ -68,21 +68,6 @@ func WithMessagef(err error, format string, args ...any) error {
 	return internal.Errorf(1, format+": %w", append(args, err)...)
 }
 
-// WithStack annotates err with a stack trace at the point [WithStack] was called.
-// If err is nil, [WithStack] returns nil.
-//
-// This implementation uses the module's [Join] functionality internally to ensure
-// stack trace information is preserved and added appropriately.
-//
-// This function allows compatibility for [github.com/pkg/errors.WithStack] but is
-// currently not encouraged by this module.
-//
-// Deprecated: Use the recommended API of this module instead. Stack traces are
-// automatically added by [New], [Errorf], and [Join] functions.
-func WithStack(err error) error {
-	return internal.NewJoin(1, err)
-}
-
 // Wrap returns an error annotating err with a stack trace at the point [Wrap] is
 // called, and the supplied message. If err is nil, [Wrap] returns nil.
 //

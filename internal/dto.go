@@ -66,6 +66,15 @@ func (err *Simple) ToDTO(stack *dto.StackTrace, s *settings.Settings) *dto.Error
 
 func (e *WithStack) ToDTO(_ *dto.StackTrace, s *settings.Settings) *dto.Error {
 	if s.ShowStackTrace {
+		if e.Explicit {
+			return &dto.Error{
+				Type:       "explicit_with_stack",
+				StackTrace: e.St.ToDTO(s),
+				Components: []any{dto.NewError(e.Inner, nil, s)},
+				Wrapped:    1,
+			}
+		}
+
 		return dto.NewError(e.Inner, e.St.ToDTO(s), s)
 	}
 
