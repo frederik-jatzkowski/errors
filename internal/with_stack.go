@@ -1,8 +1,9 @@
 package internal
 
 type WithStack struct {
-	Inner error
-	St    *StackTrace
+	Inner    error
+	St       *StackTrace
+	Explicit bool
 }
 
 func (e *WithStack) Error() string {

@@ -74,6 +74,7 @@ This tour is structured as a series of lessons, each building on the previous on
    - When stack traces are added vs. skipped
    - Understanding the stack trace format
    - Preventing duplicate stack traces
+   - Explicitly adding stack traces with `WithStack`
 
 6. **[Sentinel Errors](./06-sentinel-errors.md)**
    - Defining sentinel errors correctly
